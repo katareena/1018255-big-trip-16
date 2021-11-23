@@ -11,5 +11,10 @@ module.exports = {
     // имя файла со сборкой
     filename: 'bundle.js'
   },
-  devtool: 'source-map'
+  devtool: 'source-map',
+  devServer: {
+    // hot: false = hot: replace
+    // hot - горячая перезагрузка модулей // возможность автоматической перезагрузки модуля если в него внесли изменения (??)
+    hot: false
+  }
 };
