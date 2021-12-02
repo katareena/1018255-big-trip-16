@@ -6,6 +6,10 @@ import {createInfoRouteTemplate} from './view/info-route-view.js';
 import {createFormEditTemplate} from './view/form-edit-view.js';
 import {createRoutePointTemplate} from './view/route-point-view.js';
 
+import points from './mock/point.js';
+// console.log(points);
+// import destination from './mock/destination.js';
+
 import {renderTemplate, RenderPosition} from './render.js';
 
 const  ROUT_POINT_COUNT = 3;
@@ -29,6 +33,6 @@ renderTemplate(routePointBox, createSortingMenuTemplate(), RenderPosition.BEFORE
 renderTemplate(routePointBox, createFormCreateTemplate(), RenderPosition.AFTERBEGIN);
 
 for (let i = 0; i < ROUT_POINT_COUNT; i++) {
-  renderTemplate(routePointBox, createRoutePointTemplate(), RenderPosition.BEFOREEND);
+  renderTemplate(routePointBox, createRoutePointTemplate(points[i]), RenderPosition.BEFOREEND);
   renderTemplate(routePointBox, createFormEditTemplate(), RenderPosition.BEFOREEND);
 }
