@@ -12,7 +12,7 @@ import points from './mock/point.js';
 
 import {renderTemplate, RenderPosition} from './render.js';
 
-const  ROUT_POINT_COUNT = 3;
+const  ROUT_POINT_COUNT = 5;
 
 const siteHeaderElement = document.querySelector('.page-header');
 const headerInfoRouteBox = siteHeaderElement.querySelector('.trip-main');
@@ -30,9 +30,9 @@ renderTemplate(headerFiltersBox, createFiltersTemplate(), RenderPosition.BEFOREE
 
 renderTemplate(routePointBox, createSortingMenuTemplate(), RenderPosition.BEFOREBEGIN);
 
-renderTemplate(routePointBox, createFormCreateTemplate(), RenderPosition.AFTERBEGIN);
+renderTemplate(routePointBox, createFormCreateTemplate(points[0]), RenderPosition.AFTERBEGIN);
 
-for (let i = 0; i < ROUT_POINT_COUNT; i++) {
+for (let i = 1; i < ROUT_POINT_COUNT; i++) {
   renderTemplate(routePointBox, createRoutePointTemplate(points[i]), RenderPosition.BEFOREEND);
-  renderTemplate(routePointBox, createFormEditTemplate(), RenderPosition.BEFOREEND);
+  renderTemplate(routePointBox, createFormEditTemplate(points[i]), RenderPosition.BEFOREEND);
 }
