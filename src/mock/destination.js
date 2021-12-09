@@ -22,17 +22,13 @@ const generateDescription = () => {
   return output.join('');
 };
 
-const photos = new Array(6).fill(undefined).map(() => `http://picsum.photos/300/200?r=${getRandom(1, 1000)}`);
+const photos = new Array(6).fill(undefined).map(() => ({
+  'src': `http://picsum.photos/300/200?r=${getRandom(1, 1000)}`,
+  'description': generateDescription()
+}));
 
-// если назначение пусто
 export const generateDestination = () => ({
   'description': generateDescription(),
   'name': CITY[Math.floor(Math.random() * CITY.length)],
-  'pictures': [
-    {
-      'src': photos,
-      'description': generateDescription()
-    }
-  ]
+  'pictures': photos,
 });
-

@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-// import flatpickr from 'flatpickr';
 import { nanoid } from 'nanoid';
 import toCamelCase from './to-camel-case.js';
 import getRandom from './get-random.js';
@@ -8,7 +7,7 @@ import {generateDestination} from './destination.js';
 
 const BOOLEANS = [true, false];
 const POINT_TYPE = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
-const NUMBER_OF_POINTS = 20;
+const NUMBER_OF_POINTS = 6;
 
 const generateDate = () => dayjs().add((getRandom(1, 10)), 'day');
 
@@ -57,7 +56,5 @@ points = toCamelCase(points);
 // const points = new Array(NUMBER_OF_POINTS).fill(undefined).map(() => generatePoint());
 // метод .from сразу заполняет созданный массив значением undefined, а так же вторым аргументом принимает колбек, но в этом случае не могу применить toCamelCase() к колбеку
 // const points = Array.from({length: NUMBER_OF_POINTS}, generatePoint);
-
-console.log(points);
 
 export default points;

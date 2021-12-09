@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-// import getRandom from './../mock/get-random.js';
 
 export const createRoutePointTemplate = ({type, basePrice, dateFrom, dateTo, destination: {name}, isFavorite, offers}) => {
 
@@ -16,11 +15,9 @@ export const createRoutePointTemplate = ({type, basePrice, dateFrom, dateTo, des
     }
   };
 
-  // точка маршрута с пустым назначеним
-
   const createOffersBlock = (arr) => {
 
-    const createOfferItems = () =>  arr.map((el) => (
+    const createOfferItems = () => arr.map((el) => (
       `<li class="event__offer">
         <span class="event__offer-title">${el.title}</span>
         &plus;&euro;&nbsp;

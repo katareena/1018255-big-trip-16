@@ -1,8 +1,7 @@
 import dayjs from 'dayjs';
 import { CITY } from './../mock/destination.js';
 
-export const createFormCreateTemplate = ({type, basePrice, dateFrom, dateTo, destination: {name, description}, offers}) => {
-
+export const createFormCreateTemplate = ({type, basePrice, dateFrom, dateTo, destination: {name, description, pictures}, offers}) => {
 
   const dateFromPoint = dayjs(dateFrom).format('DD/MM/YY HH:MM');
   const dateToPoint = dayjs(dateTo).format('DD/MM/YY HH:MM');
@@ -43,20 +42,18 @@ export const createFormCreateTemplate = ({type, basePrice, dateFrom, dateTo, des
     }
   };
 
-  // const createPhotosBlock = (arr) => {
+  const createPhotosBlock = (arr) => {
 
-  //   const createPhotoItems = () =>  arr.map((el) => (
-  //     `<img class="event__photo" src="${el}" alt="Event photo">`
-  //   ));
+    const createPhotoItems = () =>  arr.map((el) => (
+      `<img class="event__photo" src="${el.src}" alt="${el.description}">`
+    ));
 
-  //   return `<div class="event__photos-container">
-  //       <div class="event__photos-tape">
-  //         ${createPhotoItems(arr).join('')}
-  //       </div>
-  //     </div>`;
-
-  // };
-
+    return `<div class="event__photos-container">
+        <div class="event__photos-tape">
+          ${createPhotoItems(arr).join('')}
+        </div>
+      </div>`;
+  };
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -157,6 +154,7 @@ export const createFormCreateTemplate = ({type, basePrice, dateFrom, dateTo, des
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
           <p class="event__destination-description">${description}</p>
 
+          ${createPhotosBlock(pictures)}
 
         </section>
       </section>
