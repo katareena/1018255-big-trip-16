@@ -51,10 +51,10 @@ const generatePoint = () => {
   };
 };
 
+// два варианта создания массива:
+// 1. const points = Array.from({length: NUMBER_OF_POINTS}, generatePoint); // метод .from сразу заполняет созданный массив значением undefined, а так же вторым аргументом принимает колбек, но в этом случае не могу применить toCamelCase() к колбеку
+// 2. :
 let points = new Array(NUMBER_OF_POINTS).fill(undefined).map(() => generatePoint());
 points = toCamelCase(points);
-// const points = new Array(NUMBER_OF_POINTS).fill(undefined).map(() => generatePoint());
-// метод .from сразу заполняет созданный массив значением undefined, а так же вторым аргументом принимает колбек, но в этом случае не могу применить toCamelCase() к колбеку
-// const points = Array.from({length: NUMBER_OF_POINTS}, generatePoint);
 
 export default points;
