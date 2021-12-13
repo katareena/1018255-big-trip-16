@@ -6,9 +6,10 @@ import {createInfoRouteTemplate} from './view/info-route-view.js';
 import {createFormEditTemplate} from './view/form-edit-view.js';
 import {createRoutePointTemplate} from './view/route-point-view.js';
 
+import points from './mock/point.js';
 import {renderTemplate, RenderPosition} from './render.js';
 
-const  ROUT_POINT_COUNT = 3;
+const  ROUT_POINT_COUNT = 5;
 
 const siteHeaderElement = document.querySelector('.page-header');
 const headerInfoRouteBox = siteHeaderElement.querySelector('.trip-main');
@@ -18,7 +19,7 @@ const headerFiltersBox = siteHeaderElement.querySelector('.trip-controls__filter
 const main = document.querySelector('.page-main');
 const routePointBox = main.querySelector('.trip-events__list');
 
-renderTemplate(headerInfoRouteBox, createInfoRouteTemplate(), RenderPosition.AFTERBEGIN);
+renderTemplate(headerInfoRouteBox, createInfoRouteTemplate(points), RenderPosition.AFTERBEGIN);
 
 renderTemplate(headerMenuBox, createSiteMenuTemplate(), RenderPosition.BEFOREEND);
 
@@ -26,9 +27,9 @@ renderTemplate(headerFiltersBox, createFiltersTemplate(), RenderPosition.BEFOREE
 
 renderTemplate(routePointBox, createSortingMenuTemplate(), RenderPosition.BEFOREBEGIN);
 
-renderTemplate(routePointBox, createFormCreateTemplate(), RenderPosition.AFTERBEGIN);
+renderTemplate(routePointBox, createFormCreateTemplate(points[0]), RenderPosition.AFTERBEGIN);
 
-for (let i = 0; i < ROUT_POINT_COUNT; i++) {
-  renderTemplate(routePointBox, createRoutePointTemplate(), RenderPosition.BEFOREEND);
-  renderTemplate(routePointBox, createFormEditTemplate(), RenderPosition.BEFOREEND);
+for (let i = 1; i <= ROUT_POINT_COUNT; i++) {
+  renderTemplate(routePointBox, createRoutePointTemplate(points[i]), RenderPosition.BEFOREEND);
+  renderTemplate(routePointBox, createFormEditTemplate(points[i]), RenderPosition.BEFOREEND);
 }
