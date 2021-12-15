@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
+import {createElement} from '../render.js';
 
-export const createInfoRouteTemplate = (points) => {
+const createInfoRouteTemplate = (points) => {
 
   const destinations = points.map((obj) => obj.destination.name);
   const timesFrom = points.map((obj) => obj.dateFrom);
@@ -25,3 +26,28 @@ export const createInfoRouteTemplate = (points) => {
     </p>
   </section>`;
 };
+
+export default class InfoRouteView {
+  #element = null;
+  #points = null;
+
+  constructor(points) {
+    this.#points = points;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createInfoRouteTemplate(this.#points);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
