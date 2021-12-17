@@ -25,18 +25,21 @@ if (points.length === 0) {
   render(headerFiltersBox, new FiltersView().element, RenderPosition.BEFOREEND);
   const filters = document.querySelectorAll('.trip-filters__filter-input');
 
+  let noPointsComponent = null;
   for(let i = 0; i < filters.length; i++) {
     if(filters[i].checked) {
-      render(routePointBox, new NoPointsView(filters[i].id).element, RenderPosition.AFTEREND);
+      noPointsComponent = new NoPointsView(filters[i].id);
+      render(routePointBox, noPointsComponent.element, RenderPosition.AFTEREND);
     }
-  }
 
-  filters.forEach((elem) => {
-    elem.addEventListener('change', () => {
-      document.querySelector('.trip-events__msg').remove();
-      render(routePointBox, new NoPointsView(elem.id).element, RenderPosition.AFTEREND);
+    filters[i].addEventListener('click', () => {
+      noPointsComponent.element.remove();
+
+      noPointsComponent = new NoPointsView(filters[i].id);
+      render(routePointBox, noPointsComponent.element, RenderPosition.AFTEREND);
+
     });
-  });
+  }
 
 } else {
 

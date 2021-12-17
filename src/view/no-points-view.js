@@ -1,15 +1,13 @@
 import {createElement} from '../render.js';
 
+const TEXT = {
+  'filter-everything': 'Click New Event to create your first point',
+  'filter-future': 'There are no future events now',
+  'filter-past': 'There are no past events now',
+};
+
 const createNoPointsTemplate = (id) => {
-
-  const text = {
-    'filter-everything': 'Click New Event to create your first point',
-    'filter-future': 'There are no future events now',
-    'filter-past': 'There are no past events now',
-  };
-
-  const innerText = text[id];
-
+  const innerText = TEXT[id];
   return `<p class="trip-events__msg">${innerText}</p>`;
 };
 
