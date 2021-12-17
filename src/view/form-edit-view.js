@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
+import {createElement} from '../render.js';
 
-export const createFormEditTemplate = ({type, basePrice, dateFrom, dateTo, destination: {name, description}, offers}) => {
+const createFormEditTemplate = ({type, basePrice, dateFrom, dateTo, destination: {name, description}, offers}) => {
 
   const dateFromPoint = dayjs(dateFrom).format('DD/MM/YY HH:MM');
   const dateToPoint = dayjs(dateTo).format('DD/MM/YY HH:MM');
@@ -29,8 +30,7 @@ export const createFormEditTemplate = ({type, basePrice, dateFrom, dateTo, desti
     }
   };
 
-  return `<li class="trip-events__item">
-    <form class="event event--edit" action="#" method="post">
+  return `<div><form class="event event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -134,5 +134,30 @@ export const createFormEditTemplate = ({type, basePrice, dateFrom, dateTo, desti
         </section>
       </section>
     </form>
-  </li>`;
+    </div>`;
 };
+
+export default class FormEditView {
+  #element = null;
+  #points = null;
+
+  constructor(points) {
+    this.#points = points;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createFormEditTemplate(this.#points);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

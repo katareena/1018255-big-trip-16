@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
+import {createElement} from '../render.js';
 
-export const createRoutePointTemplate = ({type, basePrice, dateFrom, dateTo, destination: {name}, isFavorite, offers}) => {
+const createPointTemplate = ({type, basePrice, dateFrom, dateTo, destination: {name}, isFavorite, offers}) => {
 
   const dateFromPoint = dayjs(dateFrom).format('DD/MM/YY HH:MM');
   const dateToPoint = dayjs(dateTo).format('DD/MM/YY HH:MM');
@@ -34,8 +35,7 @@ export const createRoutePointTemplate = ({type, basePrice, dateFrom, dateTo, des
     }
   };
 
-  return `<li class="trip-events__item">
-    <div class="event">
+  return `<div class="event">
       <time class="event__date" datetime="2019-03-18">MAR 18</time>
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/taxi.png" alt="Event type icon">
@@ -65,6 +65,30 @@ export const createRoutePointTemplate = ({type, basePrice, dateFrom, dateTo, des
       <button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
       </button>
-    </div>
-  </li>`;
+    </div>`;
 };
+
+export default class PointView {
+  #element = null;
+  #points = null;
+
+  constructor(points) {
+    this.#points = points;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createPointTemplate(this.#points);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

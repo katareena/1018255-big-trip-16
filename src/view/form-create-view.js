@@ -1,7 +1,8 @@
 import dayjs from 'dayjs';
-import { CITY } from './../mock/destination.js';
+import {CITY} from './../mock/destination.js';
+import {createElement} from '../render.js';
 
-export const createFormCreateTemplate = ({type, basePrice, dateFrom, dateTo, destination: {name, description, pictures}, offers}) => {
+const createFormCreateTemplate = ({type, basePrice, dateFrom, dateTo, destination: {name, description, pictures}, offers}) => {
 
   const dateFromPoint = dayjs(dateFrom).format('DD/MM/YY HH:MM');
   const dateToPoint = dayjs(dateTo).format('DD/MM/YY HH:MM');
@@ -161,3 +162,28 @@ export const createFormCreateTemplate = ({type, basePrice, dateFrom, dateTo, des
     </form>
   </li>`;
 };
+
+export default class FormCreateView {
+  #element = null;
+  #points = null;
+
+  constructor(points) {
+    this.#points = points;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createFormCreateTemplate(this.#points);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
