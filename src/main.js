@@ -26,20 +26,23 @@ if (points.length === 0) {
   const filters = document.querySelectorAll('.trip-filters__filter-input');
 
   let noPointsComponent = null;
-  for(let i = 0; i < filters.length; i++) {
-    if(filters[i].checked) {
-      noPointsComponent = new NoPointsView(filters[i].id);
+
+  filters.forEach((elem) => {
+
+    if(elem.checked) {
+      noPointsComponent = new NoPointsView(elem.id);
       render(routePointBox, noPointsComponent.element, RenderPosition.AFTEREND);
     }
 
-    filters[i].addEventListener('click', () => {
+    elem.addEventListener('click', () => {
       noPointsComponent.element.remove();
 
-      noPointsComponent = new NoPointsView(filters[i].id);
+      noPointsComponent = new NoPointsView(elem.id);
       render(routePointBox, noPointsComponent.element, RenderPosition.AFTEREND);
 
     });
-  }
+
+  });
 
 } else {
 
