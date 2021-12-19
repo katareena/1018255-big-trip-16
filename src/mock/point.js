@@ -7,7 +7,7 @@ import {generateDestination} from './destination.js';
 
 const BOOLEANS = [true, false];
 const POINT_TYPE = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
-const NUMBER_OF_POINTS = 0;
+const NUMBER_OF_POINTS = 6;
 
 const generateDate = () => dayjs().add((getRandom(1, 10)), 'day');
 

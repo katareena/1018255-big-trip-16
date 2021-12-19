@@ -9,7 +9,7 @@ import FormEditView from './view/form-edit-view.js';
 import NoPointsView from './view/no-points-view.js';
 
 import points from './mock/point.js';
-import {render, RenderPosition} from './render.js';
+import {render, RenderPosition, replace, remove} from './utils/render.js';
 
 const ROUT_POINT_COUNT = 5;
 
@@ -22,7 +22,7 @@ const routePointBox = main.querySelector('.trip-events__list');
 
 if (points.length === 0) {
 
-  render(headerFiltersBox, new FiltersView().element, RenderPosition.BEFOREEND);
+  render(headerFiltersBox, new FiltersView(), RenderPosition.BEFOREEND);
   const filters = document.querySelectorAll('.trip-filters__filter-input');
 
   let noPointsComponent = null;
@@ -31,41 +31,39 @@ if (points.length === 0) {
 
     if(elem.checked) {
       noPointsComponent = new NoPointsView(elem.id);
-      render(routePointBox, noPointsComponent.element, RenderPosition.AFTEREND);
+      render(routePointBox, noPointsComponent, RenderPosition.AFTEREND);
     }
 
     elem.addEventListener('click', () => {
-      noPointsComponent.element.remove();
-
+      remove(noPointsComponent);
       noPointsComponent = new NoPointsView(elem.id);
-      render(routePointBox, noPointsComponent.element, RenderPosition.AFTEREND);
-
+      render(routePointBox, noPointsComponent, RenderPosition.AFTEREND);
     });
 
   });
 
 } else {
 
-  render(headerInfoRouteBox, new InfoRouteView(points).element, RenderPosition.AFTERBEGIN);
+  render(headerInfoRouteBox, new InfoRouteView(points), RenderPosition.AFTERBEGIN);
 
-  render(headerMenuBox, new SiteMenuView().element, RenderPosition.BEFOREEND);
+  render(headerMenuBox, new SiteMenuView(), RenderPosition.BEFOREEND);
 
-  render(headerFiltersBox, new FiltersView().element, RenderPosition.BEFOREEND);
+  render(headerFiltersBox, new FiltersView(), RenderPosition.BEFOREEND);
 
-  render(routePointBox, new SortingMenuView().element, RenderPosition.BEFOREBEGIN);
+  render(routePointBox, new SortingMenuView(), RenderPosition.BEFOREBEGIN);
 
-  render(routePointBox, new FormCreateView(points[0]).element, RenderPosition.AFTERBEGIN);
+  render(routePointBox, new FormCreateView(points[0]), RenderPosition.AFTERBEGIN);
 
   const renderPoint = (conteiner, point) => {
     const pointComponent = new PointView(point);
     const pointEdinComponent = new FormEditView(point);
 
     const replacePointToEditForm = () => {
-      conteiner.replaceChild(pointEdinComponent.element, pointComponent.element);
+      replace(pointEdinComponent, pointComponent);
     };
 
     const replaceEditFormToPoint = () => {
-      conteiner.replaceChild(pointComponent.element, pointEdinComponent.element);
+      replace(pointComponent, pointEdinComponent);
     };
 
     const onEscKeyDown = (evt) => {
@@ -76,29 +74,27 @@ if (points.length === 0) {
       }
     };
 
-    pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    pointComponent.setEditClickHandler(() => {
       replacePointToEditForm();
       document.addEventListener('keydown', onEscKeyDown);
     });
 
-    pointEdinComponent.element.querySelector('form').addEventListener('submit', (evt) => {
-      evt.preventDefault();
+    pointEdinComponent.setFormSubmitHandler(() => {
       replaceEditFormToPoint();
       document.removeEventListener('keydown', onEscKeyDown);
     });
 
-    pointEdinComponent.element.querySelector('.event__rollup-btn').addEventListener('click', (evt) => {
-      evt.preventDefault();
+    pointEdinComponent.setCloseClickHandler(() => {
       replaceEditFormToPoint();
       document.removeEventListener('keydown', onEscKeyDown);
     });
 
-    render(conteiner, pointComponent.element, RenderPosition.BEFOREEND);
+    render(conteiner, pointComponent, RenderPosition.BEFOREEND);
   };
 
   for (let i = 1; i <= ROUT_POINT_COUNT; i++) {
     const pointItemComponent = new PointItemView();
-    render(routePointBox, pointItemComponent.element, RenderPosition.BEFOREEND);
+    render(routePointBox, pointItemComponent, RenderPosition.BEFOREEND);
     renderPoint(pointItemComponent.element, points[i]);
   }
 }

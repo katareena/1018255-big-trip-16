@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import {CITY} from './../mock/destination.js';
-import {createElement} from '../render.js';
+import AbstractView from './abstract-view.js';
 
 const createFormCreateTemplate = ({type, basePrice, dateFrom, dateTo, destination: {name, description, pictures}, offers}) => {
 
@@ -163,27 +163,15 @@ const createFormCreateTemplate = ({type, basePrice, dateFrom, dateTo, destinatio
   </li>`;
 };
 
-export default class FormCreateView {
-  #element = null;
+export default class FormCreateView extends AbstractView {
   #points = null;
 
   constructor(points) {
+    super();
     this.#points = points;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createFormCreateTemplate(this.#points);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

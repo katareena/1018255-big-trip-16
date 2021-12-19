@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
-import {createElement} from '../render.js';
+import { nanoid } from 'nanoid';
+import AbstractView from './abstract-view.js';
 
 const createFormEditTemplate = ({type, basePrice, dateFrom, dateTo, destination: {name, description}, offers}) => {
 
@@ -8,15 +9,17 @@ const createFormEditTemplate = ({type, basePrice, dateFrom, dateTo, destination:
 
   const createOffersBlock = (arr) => {
 
-    const createOfferItems = () =>  arr.map((el) => (
-      `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
-        <label class="event__offer-label" for="event-offer-luggage-1">
+    const createOfferItems = () =>  arr.map((el) => {
+      const id = nanoid(5);
+      return `<div class="event__offer-selector">
+        <input class="event__offer-checkbox  visually-hidden" id="${id}" type="checkbox" name="event-offer-luggage">
+        <label class="event__offer-label" for="${id}">
           <span class="event__offer-title">${el.title}</span>
           &plus; &euro;&nbsp;
           <span class="event__offer-price">${el.price}</span>
         </label>
-      </div>`));
+      </div>`;
+    });
 
     if (arr.length <= 0) {
       return '';
@@ -137,27 +140,37 @@ const createFormEditTemplate = ({type, basePrice, dateFrom, dateTo, destination:
     </div>`;
 };
 
-export default class FormEditView {
-  #element = null;
+export default class FormEditView extends AbstractView {
   #points = null;
 
   constructor(points) {
+    super();
     this.#points = points;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createFormEditTemplate(this.#points);
   }
 
-  removeElement() {
-    this.#element = null;
+  setCloseClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickHandler);
+  }
+
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  }
+
+  // чтобы контекст не потерялся специально используется стрелочная ф-я
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  }
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit();
+    //что-то еще
   }
 }
