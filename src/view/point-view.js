@@ -1,41 +1,43 @@
 import dayjs from 'dayjs';
 import AbstractView from './abstract-view.js';
+import {Date} from '../consts/dates.js';
+
+const createFavorite = (value) => {
+  if (value) {
+    return 'event__favorite-btn event__favorite-btn--active';
+  } else {
+    return 'event__favorite-btn';
+  }
+};
+
+const createOfferItems = (offers) => offers.map((offer) => (
+  `<li class="event__offer">
+    <span class="event__offer-title">${offer.title}</span>
+    &plus;&euro;&nbsp;
+    <span class="event__offer-price">${offer.price}</span>
+  </li>`)).join('');
+
+const createOffersBlock = (offers) => {
+  if (offers.length <= 0) {
+    return '';
+  } else {
+    return (
+      `<ul class="event__selected-offers">
+        ${createOfferItems(offers)}
+      </ul>`
+    );
+  }
+};
 
 const createPointTemplate = ({type, basePrice, dateFrom, dateTo, destination: {name}, isFavorite, offers}) => {
+  const dateFromPoint = dayjs(dateFrom).format(Date.full);
+  const dateToPoint = dayjs(dateTo).format(Date.full);
+  const timeStart = dayjs(dateFrom).format(Date.time);
+  const timeEnd = dayjs(dateTo).format(Date.time);
 
-  const dateFromPoint = dayjs(dateFrom).format('DD/MM/YY HH:MM');
-  const dateToPoint = dayjs(dateTo).format('DD/MM/YY HH:MM');
-  const timeStart = dayjs(dateFrom).format('HH:MM');
-  const timeEnd = dayjs(dateTo).format('HH:MM');
-
-  const createFavorite = (value) => {
-    if (value) {
-      return 'event__favorite-btn event__favorite-btn--active';
-    } else {
-      return 'event__favorite-btn';
-    }
-  };
-
-  const createOffersBlock = (arr) => {
-
-    const createOfferItems = () => arr.map((el) => (
-      `<li class="event__offer">
-        <span class="event__offer-title">${el.title}</span>
-        &plus;&euro;&nbsp;
-        <span class="event__offer-price">${el.price}</span>
-      </li>`)
-    );
-
-    if (arr.length <= 0) {
-      return '<ul class="event__selected-offers"></ul>';
-    } else {
-      return `<ul class="event__selected-offers">
-        ${createOfferItems(arr).join('')}
-      </ul>`;
-    }
-  };
-
-  return `<div class="event">
+  return (
+    `<li class="trip-events__item">
+    <div class="event">
       <time class="event__date" datetime="2019-03-18">MAR 18</time>
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/taxi.png" alt="Event type icon">
@@ -65,7 +67,9 @@ const createPointTemplate = ({type, basePrice, dateFrom, dateTo, destination: {n
       <button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
       </button>
-    </div>`;
+    </div>
+    </li>`
+  );
 };
 
 export default class PointView extends AbstractView {
@@ -82,10 +86,10 @@ export default class PointView extends AbstractView {
 
   setEditClickHandler = (callback) => {
     this._callback.editClick = callback;
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickOnPointHandler);
   }
 
-  #clickHandler = (evt) => {
+  #clickOnPointHandler = (evt) => {
     evt.preventDefault();
     this._callback.editClick();
   }

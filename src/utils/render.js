@@ -1,35 +1,20 @@
 import AbstractView from '../view/abstract-view.js';
 
 export const RenderPosition = {
-  BEFOREBEGIN: 'beforebegin',
-  AFTERBEGIN: 'afterbegin',
-  BEFOREEND: 'beforeend',
-  AFTEREND: 'afterend',
+  BEFORE_BEGIN: 'before',
+  AFTER_BEGIN: 'prepend',
+  BEFORE_END: 'append',
+  AFTER_END: 'after',
 };
 
 export const render = (container, element, place) => {
   const parent = container instanceof AbstractView ? container.element : container;
   const child = element instanceof AbstractView ? element.element : element;
 
-  switch (place) {
-    case RenderPosition.BEFOREBEGIN:
-      parent.before(child);
-      break;
-    case RenderPosition.AFTERBEGIN:
-      parent.prepend(child);
-      break;
-    case RenderPosition.BEFOREEND:
-      parent.append(child);
-      break;
-    case RenderPosition.AFTEREND:
-      parent.after(child);
-      break;
-  }
+  parent[place](child); //вычисляемые ключи стандарт ES2015
 };
 
 export const createElement = (template) => {
-
-  // общая обертка(div) нужна для dom-элемента только при создании, при использовании она не нужна, поэтому возвращаем firstChild
   const newElement = document.createElement('div');
   newElement.innerHTML = template;
 

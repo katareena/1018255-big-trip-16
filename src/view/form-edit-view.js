@@ -1,39 +1,50 @@
 import dayjs from 'dayjs';
-import { nanoid } from 'nanoid';
 import AbstractView from './abstract-view.js';
+import {Date} from '../consts/dates.js';
 
-const createFormEditTemplate = ({type, basePrice, dateFrom, dateTo, destination: {name, description}, offers}) => {
+const createPhotoItems = (photos) => photos.map((photo) => (
+  `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`
+)).join('');
 
-  const dateFromPoint = dayjs(dateFrom).format('DD/MM/YY HH:MM');
-  const dateToPoint = dayjs(dateTo).format('DD/MM/YY HH:MM');
+const createPhotosBlock = (photos) => (
+  `<div class="event__photos-container">
+    <div class="event__photos-tape">
+      ${createPhotoItems(photos)}
+    </div>
+  </div>`
+);
 
-  const createOffersBlock = (arr) => {
+const createOfferItems = (offers) => offers.map((offer) => (
+  `<div class="event__offer-selector">
+    <input class="event__offer-checkbox  visually-hidden" id="${offer.id}" type="checkbox">
+    <label class="event__offer-label" for="${offer.id}">
+      <span class="event__offer-title">${offer.title}</span>
+      &plus; &euro;&nbsp;
+      <span class="event__offer-price">${offer.price}</span>
+    </label>
+  </div>`)).join('');
 
-    const createOfferItems = () =>  arr.map((el) => {
-      const id = nanoid(5);
-      return `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="${id}" type="checkbox" name="event-offer-luggage">
-        <label class="event__offer-label" for="${id}">
-          <span class="event__offer-title">${el.title}</span>
-          &plus; &euro;&nbsp;
-          <span class="event__offer-price">${el.price}</span>
-        </label>
-      </div>`;
-    });
-
-    if (arr.length <= 0) {
-      return '';
-    } else {
-      return `<section class="event__section  event__section--offers">
-      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+const createOffersBlock = (offers) => {
+  if (offers.length <= 0) {
+    return '';
+  } else {
+    return (
+      `<section class="event__section  event__section--offers">
+        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
         <div class="event__available-offers">
-          ${createOfferItems(arr).join('')}
+          ${createOfferItems(offers)}
         </div>
-      </section>`;
-    }
-  };
+      </section>`
+    );
+  }
+};
 
-  return `<div><form class="event event--edit" action="#" method="post">
+const createFormEditTemplate = ({type, basePrice, dateFrom, dateTo, destination: {name, description, pictures}, offers}) => {
+  const dateFromPoint = dayjs(dateFrom).format(Date.full);
+  const dateToPoint = dayjs(dateTo).format(Date.full);
+
+  return (
+    `<li class="trip-events__item"><form class="event event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -134,10 +145,13 @@ const createFormEditTemplate = ({type, basePrice, dateFrom, dateTo, destination:
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
           <p class="event__destination-description">${description}</p>
+
+          ${createPhotosBlock(pictures)}
+
         </section>
       </section>
-    </form>
-    </div>`;
+    </form></li>`
+  );
 };
 
 export default class FormEditView extends AbstractView {
@@ -162,8 +176,7 @@ export default class FormEditView extends AbstractView {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   }
 
-  // чтобы контекст не потерялся специально используется стрелочная ф-я
-  #clickHandler = (evt) => {
+  #clickHandler = (evt) => {// чтобы контекст не потерялся специально используется стрелочная ф-я
     evt.preventDefault();
     this._callback.click();
   }
@@ -171,6 +184,5 @@ export default class FormEditView extends AbstractView {
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this._callback.formSubmit();
-    //что-то еще
   }
 }
