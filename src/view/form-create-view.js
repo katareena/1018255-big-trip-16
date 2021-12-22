@@ -61,7 +61,7 @@ const createTypesList = () => uniqTypes.map((type) => (
   </div>`
 )).join('');
 
-const createFormCreateTemplate = ({id, type, basePrice, dateFrom, dateTo, destination: {name, description, pictures}, offers}) => {
+const createMakeFormTemplate = ({id, type, basePrice, dateFrom, dateTo, destination: {name, description, pictures}, offers}) => {
   const dateFromPoint = dayjs(dateFrom).format(Date.full);
   const dateToPoint = dayjs(dateTo).format(Date.full);
 
@@ -141,6 +141,6 @@ export default class FormCreateView extends AbstractView {
   }
 
   get template() {
-    return createFormCreateTemplate(this.#points);
+    return createMakeFormTemplate(this.#points);
   }
 }
