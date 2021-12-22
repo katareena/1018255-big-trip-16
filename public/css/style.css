@@ -931,7 +931,8 @@ main {
   border-radius: 32px;
   cursor: pointer;
   -webkit-transition: background-color 0.2s;
-  transition: background-color 0.2s; }
+  transition: background-color 0.2s;
+  white-space: nowrap; }
   .event__offer-label:hover {
     background-color: rgba(13, 138, 228, 0.6); }
   .event__offer-label::first-letter {

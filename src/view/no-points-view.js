@@ -1,37 +1,25 @@
-import {createElement} from '../render.js';
+import AbstractView from './abstract-view.js';
 
-const TEXT = {
-  'filter-everything': 'Click New Event to create your first point',
-  'filter-future': 'There are no future events now',
-  'filter-past': 'There are no past events now',
+const text = {
+  'everything': 'Click New Event to create your first point',
+  'future': 'There are no future events now',
+  'past': 'There are no past events now',
 };
 
-const createNoPointsTemplate = (id) => {
-  const innerText = TEXT[id];
+const createNoPointsTemplate = (value) => {
+  const innerText = text[value];
   return `<p class="trip-events__msg">${innerText}</p>`;
 };
 
-export default class NoPointsView {
-  #element = null;
-  #id = null;
+export default class NoPointsView extends AbstractView {
+  #value = null;
 
-  constructor(id) {
-    this.#id = id;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
+  constructor(value) {
+    super();
+    this.#value = value;
   }
 
   get template() {
-    return createNoPointsTemplate(this.#id);
-  }
-
-  removeElement() {
-    this.#element = null;
+    return createNoPointsTemplate(this.#value);
   }
 }

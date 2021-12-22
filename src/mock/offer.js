@@ -1,15 +1,11 @@
-import getRandom from './get-random.js';
-const OFFER_TYPE = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
+import {nanoid} from 'nanoid';
+import {LENGTH_OF_ID} from '../consts/common.js';
+import getRandom from '../utils/get-random.js';
 
-export const offer = {
-  'type': OFFER_TYPE[Math.floor(Math.random() * OFFER_TYPE.length)],
-  'offers': [
-    {
-      'title': 'Upgrade to a business class',
-      'price': getRandom(50, 200)
-    }, {
-      'title': 'Choose the radio station',
-      'price': getRandom(50, 200)
-    }
-  ]
-};
+const OFFERS = ['Add luggage', 'Switch to comfort class', 'Add meal', 'Choose seats', 'Travel by train', 'Choose the radio station', 'Upgrade to a business class'];
+
+export const generateOffer = () => ({
+  'id': nanoid(LENGTH_OF_ID),
+  'title': OFFERS[Math.floor(Math.random() * OFFERS.length)],
+  'price': getRandom(50, 200),
+});
