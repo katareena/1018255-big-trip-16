@@ -8,7 +8,7 @@ import FormEditView from './view/form-edit-view.js';
 import NoPointsView from './view/no-points-view.js';
 
 import points from './mock/point.js';
-import {render, RenderPosition, replace, remove} from './utils/render.js';
+import {render, RenderPosition, replace} from './utils/render.js';
 import {MOCK_FOR_CREATE_FORM} from './consts/common.js';
 
 const siteHeaderElement = document.querySelector('.page-header');
@@ -25,12 +25,6 @@ const changeInfoMessage = (filter) => {
     noPointsComponent = new NoPointsView(filter.value);
     render(routePointBox, noPointsComponent, RenderPosition.AFTER_END);
   }
-
-  filter.addEventListener('click', () => {
-    remove(noPointsComponent);
-    noPointsComponent = new NoPointsView(filter.value);
-    render(routePointBox, noPointsComponent, RenderPosition.AFTER_END);
-  });
 };
 
 const renderPoint = (conteiner, point) => {
@@ -77,6 +71,7 @@ if (points.length === 0) {
   render(headerFiltersBox, new FiltersView(), RenderPosition.BEFORE_END);
   const filters = document.querySelectorAll('.trip-filters__filter-input');
   filters.forEach(changeInfoMessage);
+  render(routePointBox, noPointsComponent, RenderPosition.AFTER_END);
 } else {
   render(headerInfoRouteBox, new InfoRouteView(points), RenderPosition.AFTER_BEGIN);
   render(headerMenuBox, new SiteMenuView(), RenderPosition.BEFORE_END);
@@ -88,5 +83,3 @@ if (points.length === 0) {
     renderPoint(routePointBox, points[i]);
   }
 }
-
-// console.log(points);

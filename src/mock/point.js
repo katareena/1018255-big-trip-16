@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import {nanoid} from 'nanoid';
 import toCamelCase from '../utils/to-camel-case.js';
-import getRandom from './get-random.js';
+import getRandom from '../utils/get-random.js';
 import {NUMBER_OF_POINTS, LENGTH_OF_ID} from '../consts/common.js';
 
 import {generateDestination} from './destination.js';
@@ -13,7 +13,6 @@ const POINT_TYPE = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in
 const generateDate = () => dayjs().add((getRandom(1, 10)), 'day');
 
 const generatePoint = () => {
-  const type = POINT_TYPE[Math.floor(Math.random() * POINT_TYPE.length)];
   const offers = Array.from({length: getRandom(0, 5)}, generateOffer);
 
   return {
@@ -22,7 +21,7 @@ const generatePoint = () => {
     'date_to': generateDate().add((getRandom(10, 30)), 'day').add((getRandom(20, 59)), 'minutes').toDate(),
     'id': nanoid(LENGTH_OF_ID),
     'is_favorite': BOOLEANS[Math.floor(Math.random() * BOOLEANS.length)],
-    type,
+    'type': POINT_TYPE[Math.floor(Math.random() * POINT_TYPE.length)],
     'destination': generateDestination(),
     offers,
   };
