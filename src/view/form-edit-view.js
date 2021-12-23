@@ -128,23 +128,23 @@ const createFormEditTemplate = ({id, type, basePrice, dateFrom, dateTo, destinat
 };
 
 export default class FormEditView extends AbstractView {
-  #points = null;
+  #point = null;
 
-  constructor(points) {
+  constructor(point) {
     super();
-    this.#points = points;
+    this.#point = point;
   }
 
   get template() {
-    return createFormEditTemplate(this.#points);
+    return createFormEditTemplate(this.#point);
   }
 
-  setCloseClickHandler = (callback) => {
+  setCloseClickFormHandler = (callback) => {
     this._callback.click = callback;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickHandler);
   }
 
-  setFormSubmitHandler = (callback) => {
+  setSubmitFormHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   }
@@ -156,6 +156,6 @@ export default class FormEditView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit();
+    this._callback.formSubmit(this.#point);
   }
 }

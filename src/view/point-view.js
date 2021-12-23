@@ -73,15 +73,15 @@ const createPointTemplate = ({type, basePrice, dateFrom, dateTo, destination: {n
 };
 
 export default class PointView extends AbstractView {
-  #points = null;
+  #point = null;
 
-  constructor(points) {
+  constructor(point) {
     super();
-    this.#points = points;
+    this.#point = point;
   }
 
   get template() {
-    return createPointTemplate(this.#points);
+    return createPointTemplate(this.#point);
   }
 
   setEditClickHandler = (callback) => {
@@ -92,5 +92,15 @@ export default class PointView extends AbstractView {
   #clickOnPointHandler = (evt) => {
     evt.preventDefault();
     this._callback.editClick();
+  }
+
+  setFavoriteHandler = (callback) => {
+    this._callback.favoriteClick = callback;
+    this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#favoriteClickHandler);
+  }
+
+  #favoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.favoriteClick();
   }
 }
