@@ -6,6 +6,7 @@ const createDestinationsChain = (cities) => `<h1 class="trip-info__title">${citi
 
 const createCost = (points) => {
   const cost = points.map((point) => point.basePrice).reduce((previousPrice, currentPrice) => previousPrice + currentPrice);
+
   return (
     `<p class="trip-info__cost">
       Total: &euro;&nbsp;<span class="trip-info__cost-value">${cost}</span>

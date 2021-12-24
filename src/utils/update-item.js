@@ -5,9 +5,5 @@ export const updateItem = (items, update) => {
     return items;
   }
 
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
+  return items.splice(index, 0, update); // добавляет по index элемент update, 0 - ничего не удаляет // splice() изменяет содержимое массива, удаляя существующие элементы и/или добавляя новые
 };
