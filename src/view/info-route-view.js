@@ -4,14 +4,23 @@ import {Date} from '../consts/dates.js';
 
 const createDestinationsChain = (cities) => `<h1 class="trip-info__title">${cities.join(' - ')}</h1>`;
 
-const createInfoRouteTemplate = (points) => {
-  const destinations = points.map((point) => point.destination.name);
-  const timesFrom = points.map((point) => point.dateFrom);
-  const timesTo = points.map((point) => point.dateTo);
+const createCost = (points) => {
   const cost = points.map((point) => point.basePrice).reduce((previousPrice, currentPrice) => previousPrice + currentPrice);
 
-  const dateStart = dayjs(timesFrom[0]).format(Date.day);
-  const dateEnd = dayjs(timesTo.length - 1).format(Date.day);
+  return (
+    `<p class="trip-info__cost">
+      Total: &euro;&nbsp;<span class="trip-info__cost-value">${cost}</span>
+    </p>`
+  );
+};
+
+const createInfoRouteTemplate = (points) => {
+  const destinations = points.map((point) => point.destination.name) ?? null;
+  const timesFrom = points.map((point) => point.dateFrom) ?? null;
+  const timesTo = points.map((point) => point.dateTo) ?? null;
+
+  const dateStart = dayjs(timesFrom[0]).format(Date.day) ?? null;
+  const dateEnd = dayjs(timesTo.length - 1).format(Date.day) ?? null;
 
   return (
     `<section class="trip-main__trip-info  trip-info">
@@ -21,9 +30,8 @@ const createInfoRouteTemplate = (points) => {
         <p class="trip-info__dates">${dateStart}&mdash;${dateEnd}</p>
       </div>
 
-      <p class="trip-info__cost">
-        Total: &euro;&nbsp;<span class="trip-info__cost-value">${cost}</span>
-      </p>
+      ${createCost(points)}
+
     </section>`
   );
 };
