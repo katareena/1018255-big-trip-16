@@ -1,9 +1,14 @@
-export const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
+export const updateItem = (points, updatePoint) => {
+  const updateIndex = points.findIndex((point) => point.id === updatePoint.id); //возвращает индекс в массиве, если элемент удовлетворяет условию проверяющей функции. В противном случае возвращается -1, поэтому ниже проверка на -1
 
-  if (index === -1) {
-    return items;
+  if (updateIndex === -1) {
+    return points;
   }
 
-  return items.splice(index, 0, update); // добавляет по index элемент update, 0 - ничего не удаляет // splice() изменяет содержимое массива, удаляя существующие элементы и/или добавляя новые
+  points.splice(updateIndex, 1, updatePoint); // удаляет 1 элемент по индексу updateIndex и на это место вставляет updatePoint // splice() изменяет содержимое массива
+
+  console.log(points);
+
+  return points;
+
 };
