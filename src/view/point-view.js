@@ -29,6 +29,13 @@ const createOffersBlock = (offers) => {
   }
 };
 
+const getDiff = (dateTo, dateFrom) => {
+  const oneDay = 24;
+  const duration = dayjs(dateTo).diff(dayjs(dateFrom), 'hour');
+  const daysNumber = Math.floor(duration/oneDay);
+  return `${daysNumber}D ${duration - (oneDay*daysNumber)}H`;
+};
+
 const createPointTemplate = ({type, basePrice, dateFrom, dateTo, destination: {name}, isFavorite, offers}) => {
   const dateFromPoint = dayjs(dateFrom).format(Date.full);
   const dateToPoint = dayjs(dateTo).format(Date.full);
@@ -49,7 +56,7 @@ const createPointTemplate = ({type, basePrice, dateFrom, dateTo, destination: {n
           &mdash;
           <time class="event__end-time" datetime="${dateToPoint}">${timeEnd}</time>
         </p>
-        <p class="event__duration">30M</p>
+        <p class="event__duration">${getDiff(dateTo, dateFrom)}</p>
       </div>
       <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">${basePrice}</span>

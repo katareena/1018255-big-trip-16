@@ -10,15 +10,13 @@ import {generateOffer} from './offer.js';
 const BOOLEANS = [true, false];
 const POINT_TYPE = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
-const generateDate = () => dayjs().add((getRandom(1, 10)), 'day');
-
 const generatePoint = () => {
   const offers = Array.from({length: getRandom(0, 5)}, generateOffer);
 
   return {
     'base_price': getRandom(50, 200),
-    'date_from': getRandom(50, 200),
-    'date_to': generateDate().add((getRandom(10, 30)), 'day').add((getRandom(20, 59)), 'minutes').toDate(),
+    'date_from': dayjs().toDate(),
+    'date_to': dayjs().add((getRandom(1, 5)), 'day').add((getRandom(1, 10)), 'hour').add((getRandom(5, 59)), 'minutes').toDate(),
     'id': nanoid(LENGTH_OF_ID),
     'is_favorite': BOOLEANS[Math.floor(Math.random() * BOOLEANS.length)],
     'type': POINT_TYPE[Math.floor(Math.random() * POINT_TYPE.length)],
