@@ -1,6 +1,6 @@
 import BoardView from '../view/board-view.js';
 import SortingMenuView from '../view/sorting-view.js';
-import PointListView from '../view/point-list-view.js';
+import PointsContainerView from '../view/points-container-view.js';
 
 import PointPresenter from './point-presenter.js';
 
@@ -10,17 +10,21 @@ import NoPointsView from '../view/no-points-view.js';
 import {render, RenderPosition} from '../utils/render.js';
 import {MOCK_FOR_CREATE_FORM} from '../consts/common.js';
 import {updateItem} from '../utils/update-item.js';
+import {SortType} from '../consts/sort-type.js';
+import {sortPointTime, sortPointPrice} from '../utils/sorting-points.js';
 
 export default class TripPresenter {
   #tripContainer = null;
 
   #boardComponent = new BoardView();
   #sortingMenuComponent = new SortingMenuView();
-  #pointListComponent = new PointListView();
+  #pointsContainerComponent = new PointsContainerView();
   #noPointsComponent = new NoPointsView();
 
   #points = [];
   #pointPreseters = new Map();
+  #currentSortType = SortType.DAY;
+  #sourcedPoints = [];
 
   constructor(tripContainer) {
     this.#tripContainer = tripContainer;
@@ -28,6 +32,7 @@ export default class TripPresenter {
 
   init = (points) => {
     this.#points = [...points];
+    this.#sourcedPoints = [...points]; // сохранение исходного порядка(для сортировки)
     render(this.#tripContainer, this.#boardComponent, RenderPosition.AFTER_BEGIN);
 
     this.#renderBoard();
@@ -39,36 +44,65 @@ export default class TripPresenter {
 
   #handlePointChange = (updatedPoint) => {
     this.#points = updateItem(this.#points, updatedPoint);
+    this.#sourcedPoints = updateItem(this.#sourcedPoints, updatedPoint);
     this.#pointPreseters.get(updatedPoint.id).init(updatedPoint);
   }
 
-  #renderPointList = () => {
-    render(this.#boardComponent, this.#pointListComponent, RenderPosition.BEFORE_END);
+  #sortPoints = (sortType) => {
+    switch (sortType) {
+      case SortType.TIME:
+        this.#points.sort(sortPointTime);
+        break;
+      case SortType.PRICE:
+        this.#points.sort(sortPointPrice);
+        break;
+      default:
+        // когда пользователь захочет "вернуть всё, как было" - запишем в _boardTasks исходный массив
+        this.#points = [...this.#sourcedPoints];
+    }
+
+    this.#currentSortType = sortType;
+  }
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#sortPoints(sortType);
+
+    this.#clearPointList();
+    this.#renderPointList();
   }
 
   #renderSort = () => {
     render(this.#boardComponent, this.#sortingMenuComponent, RenderPosition.BEFORE_END);
+    this.#sortingMenuComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
+  }
+
+  #renderPointsContainer = () => {
+    render(this.#boardComponent, this.#pointsContainerComponent, RenderPosition.BEFORE_END);
   }
 
   #renderFormCreate = (index) => {
-    render(this.#pointListComponent, new FormCreateView(this.#points[index]), RenderPosition.BEFORE_END);
+    render(this.#pointsContainerComponent, new FormCreateView(this.#points[index]), RenderPosition.BEFORE_END);
   }
 
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#pointListComponent, this.#handlePointChange, this.#handleModeChange);
+    const pointPresenter = new PointPresenter(this.#pointsContainerComponent, this.#handlePointChange, this.#handleModeChange);
     pointPresenter.init(point);
     this.#pointPreseters.set(point.id, pointPresenter);
   }
 
-  #clearPointList = () => {
-    this.#pointPreseters.forEach((presenter) => presenter.destroy());
-    this.#pointPreseters.clear();
-  }
-
-  #renderPoints = () => {
+  #renderPointList = () => {
     for (let i = 0; i < this.#points.length - MOCK_FOR_CREATE_FORM; i++) {
       this.#renderPoint(this.#points[i]);
     }
+  }
+
+  #clearPointList = () => {
+    this.#pointPreseters.forEach((presenter) => presenter.destroy());
+    this.clear();
   }
 
   #renderNoPoints = () => {
@@ -83,8 +117,8 @@ export default class TripPresenter {
     }
 
     this.#renderSort();
-    this.#renderPointList();
+    this.#renderPointsContainer();
     this.#renderFormCreate(this.#points.length - MOCK_FOR_CREATE_FORM);
-    this.#renderPoints();
+    this.#renderPointList();
   }
 }
