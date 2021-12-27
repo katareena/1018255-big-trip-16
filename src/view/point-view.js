@@ -2,6 +2,9 @@ import dayjs from 'dayjs';
 import AbstractView from './abstract-view.js';
 import {Date} from '../consts/dates.js';
 
+import duration from 'dayjs/plugin/duration';
+dayjs.extend(duration);
+
 const createFavorite = (value) => {
   if (value) {
     return 'event__favorite-btn event__favorite-btn--active';
@@ -30,10 +33,8 @@ const createOffersBlock = (offers) => {
 };
 
 const getDiff = (dateTo, dateFrom) => {
-  const oneDay = 24;
-  const duration = dayjs(dateTo).diff(dayjs(dateFrom), 'hour');
-  const daysNumber = Math.floor(duration/oneDay);
-  return `${daysNumber}D ${duration - (oneDay*daysNumber)}H`;
+  const diff = dayjs(dateTo).diff(dayjs(dateFrom));
+  return dayjs.duration(diff).format('D[D] H[H] m[M]');
 };
 
 const createPointTemplate = ({type, basePrice, dateFrom, dateTo, destination: {name}, isFavorite, offers}) => {

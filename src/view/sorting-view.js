@@ -1,5 +1,4 @@
 import AbstractView from './abstract-view.js';
-import {SortType} from '../consts/sort-type.js';
 
 const createSortingMenuTemplate = () => (
   `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
@@ -10,7 +9,6 @@ const createSortingMenuTemplate = () => (
         type="radio"
         name="trip-sort"
         value="sort-day"
-        data-sort-type="${SortType.DAY}"
         checked
       >
       <label class="trip-sort__btn" for="sort-day">Day</label>
@@ -23,7 +21,6 @@ const createSortingMenuTemplate = () => (
         type="radio"
         name="trip-sort"
         value="sort-event"
-        data-sort-type="${SortType.EVENT}"
         disabled
         >
       <label class="trip-sort__btn" for="sort-event">Event</label>
@@ -36,7 +33,6 @@ const createSortingMenuTemplate = () => (
         type="radio"
         name="trip-sort"
         value="sort-time"
-        data-sort-type="${SortType.TIME}"
       >
       <label class="trip-sort__btn" for="sort-time">Time</label>
     </div>
@@ -48,7 +44,6 @@ const createSortingMenuTemplate = () => (
         type="radio"
         name="trip-sort"
         value="sort-price"
-        data-sort-type="${SortType.PRICE}"
       >
       <label class="trip-sort__btn" for="sort-price">Price</label>
     </div>
@@ -60,7 +55,6 @@ const createSortingMenuTemplate = () => (
         type="radio"
         name="trip-sort"
         value="sort-offer"
-        data-sort-type="${SortType.OFFERS}"
         disabled
       >
       <label class="trip-sort__btn" for="sort-offer">Offers</label>
@@ -75,14 +69,10 @@ export default class SortingMenuView extends AbstractView {
 
   setSortTypeChangeHandler = (callback) => {
     this._callback.sortTypeChange = callback;
-    this.element.addEventListener('click', this.#sortTypeChangeHandler);
+    this.element.addEventListener('change', this.#sortTypeChangeHandler);
   }
 
   #sortTypeChangeHandler = (evt) => {
-    if (evt.target.tagName !== 'INPUT' && 'LABEL') {
-      return;
-    }
-
-    this._callback.sortTypeChange(evt.target.dataset.sortType);
+    this._callback.sortTypeChange(evt.target.value);
   }
 }

@@ -102,7 +102,7 @@ export default class TripPresenter {
 
   #clearPointList = () => {
     this.#pointPreseters.forEach((presenter) => presenter.destroy());
-    this.#pointPreseters.clear();
+    this.clear();
   }
 
   #renderNoPoints = () => {
