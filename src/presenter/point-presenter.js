@@ -2,6 +2,7 @@ import PointView from '../view/point-view.js';
 import FormEditView from '../view/form-edit-view.js';
 import {render, RenderPosition, replace, remove} from '../utils/render.js';
 import {Mode} from '../consts/common.js';
+import {FormType} from '../consts/form-type.js';
 
 export default class PointPresenter {
   #pointListContainer = null;
@@ -24,11 +25,11 @@ export default class PointPresenter {
   init = (point) => {
     this.#point = point;
 
-    const prevPointComponent = this.#pointComponent; // сохранение предыдущих обязательно до создания новых
+    const prevPointComponent = this.#pointComponent; // сохранение предыдущих обязательно ДО создания новых
     const prevPointEditComponent = this.#pointEditComponent;
 
     this.#pointComponent = new PointView(point);
-    this.#pointEditComponent = new FormEditView(point);
+    this.#pointEditComponent = new FormEditView(point, FormType.EDIT);
 
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
     this.#pointComponent.setFavoriteHandler(this.#handleFavoriteClick);

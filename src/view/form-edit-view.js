@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import AbstractView from './abstract-view.js';
 import {Date} from '../consts/dates.js';
+import {CITIES} from '../mock/destination.js';
 import {uniqTypes} from '../mock/types.js';
 
 const createPhotoItems = (photos) => photos.map((photo) => (
@@ -14,6 +15,10 @@ const createPhotosBlock = (photos) => (
     </div>
   </div>`
 );
+
+const createCityItems = (cities) => cities.map((city) => (
+  `<option value="${city}"></option>`
+)).join('');
 
 const createOfferItems = (offers) => offers.map((offer) => (
   `<div class="event__offer-selector">
@@ -56,92 +61,115 @@ const createTypesList = () => uniqTypes.map((type) => (
   </div>`
 )).join('');
 
-const createFormEditTemplate = ({id, type, basePrice, dateFrom, dateTo, destination: {name, description, pictures}, offers}) => {
+const createRollupBtn = (formType) => {
+  if(formType === 'form-edit') {
+    return (
+      `<button class="event__rollup-btn" type="button">
+        <span class="visually-hidden">Open event</span>
+      </button>`
+    );
+  } else {
+    return '';
+  }
+};
+
+const nameBtn = (formType) => {
+  if(formType === 'form-edit') {
+    return 'Delete';
+  } else {
+    return 'Cancel';
+  }
+};
+
+const createFormEditTemplate = (point, formType) => {
+  const {id, type, basePrice, dateFrom, dateTo, destination: {name, description, pictures}, offers} = point;
   const dateFromPoint = dayjs(dateFrom).format(Date.full);
   const dateToPoint = dayjs(dateTo).format(Date.full);
 
   return (
-    `<li class="trip-events__item"><form class="event event--edit" action="#" method="post">
-      <header class="event__header">
-        <div class="event__type-wrapper">
-          <label class="event__type  event__type-btn" for="event-type-toggle-${id}">
-            <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
-          </label>
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" type="checkbox">
+    `<li class="trip-events__item">
+      <form class="event event--edit" action="#" method="post">
+        <header class="event__header">
+          <div class="event__type-wrapper">
+            <label class="event__type  event__type-btn" for="event-type-toggle-${id}">
+              <span class="visually-hidden">Choose event type</span>
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
+            </label>
+            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" type="checkbox">
 
-          <div class="event__type-list">
-            <fieldset class="event__type-group">
-              <legend class="visually-hidden">Event type</legend>
-              ${createTypesList()}
-            </fieldset>
+            <div class="event__type-list">
+              <fieldset class="event__type-group">
+                <legend class="visually-hidden">Event type</legend>
+                ${createTypesList()}
+              </fieldset>
+            </div>
           </div>
-        </div>
 
-        <div class="event__field-group  event__field-group--destination">
-          <label class="event__label  event__type-output" for="event-destination-1">
-            ${type}
-          </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${name}" list="destination-list-1">
-          <datalist id="destination-list-1">
-            <option value="Amsterdam"></option>
-            <option value="Geneva"></option>
-            <option value="Chamonix"></option>
-          </datalist>
-        </div>
+          <div class="event__field-group  event__field-group--destination">
+            <label class="event__label  event__type-output" for="event-destination-${id}">
+              ${type}
+            </label>
+            <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${name}" list="destination-list-${id}">
+            <datalist id="destination-list-${id}">
+              ${createCityItems(CITIES)}
+            </datalist>
+          </div>
 
-        <div class="event__field-group  event__field-group--time">
-          <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFromPoint}">
-          &mdash;
-          <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateToPoint}">
-        </div>
+          <div class="event__field-group  event__field-group--time">
+            <label class="visually-hidden" for="event-start-time-1">From</label>
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFromPoint}">
+            &mdash;
+            <label class="visually-hidden" for="event-end-time-1">To</label>
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateToPoint}">
+          </div>
 
-        <div class="event__field-group  event__field-group--price">
-          <label class="event__label" for="event-price-1">
-            <span class="visually-hidden">Price</span>
-            &euro;
-          </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
-        </div>
+          <div class="event__field-group  event__field-group--price">
+            <label class="event__label" for="event-price-1">
+              <span class="visually-hidden">Price</span>
+              &euro;
+            </label>
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+          </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
-        <button class="event__rollup-btn" type="button">
-          <span class="visually-hidden">Open event</span>
-        </button>
-      </header>
-      <section class="event__details">
-        ${createOffersBlock(offers)}
+          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+          <button class="event__reset-btn" type="reset">${nameBtn(formType)}</button>
 
-        <section class="event__section  event__section--destination">
-          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${description}</p>
+          ${createRollupBtn(formType)}
 
-          ${createPhotosBlock(pictures)}
+        </header>
+        <section class="event__details">
+          ${createOffersBlock(offers)}
 
+          <section class="event__section  event__section--destination">
+            <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+            <p class="event__destination-description">${description}</p>
+
+            ${createPhotosBlock(pictures)}
+
+          </section>
         </section>
-      </section>
-    </form></li>`
+      </form>
+    </li>`
   );
 };
 
 export default class FormEditView extends AbstractView {
   #point = null;
+  #formType = null;
 
-  constructor(point) {
+  constructor(point, formType) {
     super();
     this.#point = point;
+    this.#formType = formType;
   }
 
   get template() {
-    return createFormEditTemplate(this.#point);
+    return createFormEditTemplate(this.#point, this.#formType);
   }
 
   setCloseClickFormHandler = (callback) => {
-    this._callback.click = callback;
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickHandler);
+    this._callback.clickClose = callback;
+    this.element.querySelector('.event__rollup-btn')?.addEventListener('click', this.#clickHandler);
   }
 
   setSubmitFormHandler = (callback) => {
@@ -151,7 +179,7 @@ export default class FormEditView extends AbstractView {
 
   #clickHandler = (evt) => {// чтобы контекст не потерялся специально используется стрелочная ф-я
     evt.preventDefault();
-    this._callback.click();
+    this._callback.clickClose();
   }
 
   #formSubmitHandler = (evt) => {
