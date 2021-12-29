@@ -1,5 +1,4 @@
 import getRandom from '../utils/get-random.js';
-import {PHOTOS_COUNT} from '../consts/common.js';
 
 export const CITIES = ['Chamonix', 'Geneva', 'Paris', 'London', 'Amsterdame', 'Rome', 'Barselona', 'Berlin', 'Hamburg', 'Dusseldorf', 'Lisbon', 'Madrid'];
 
@@ -10,7 +9,7 @@ const generateDescription = () => {
 
   const clone = array.slice();
   const output = [];
-  const count = getRandom(1, 5);
+  const count = getRandom(0, 5);
 
   for (let i = 0; i < count; i++) {
     output.push(clone.splice(Math.floor(Math.random() * clone.length), 1));
@@ -19,13 +18,76 @@ const generateDescription = () => {
   return output.join('');
 };
 
-const generatePhotos = () =>  new Array(PHOTOS_COUNT).fill(undefined).map(() => ({
+const generatePhotos = () =>  new Array(getRandom(0, 6)).fill(undefined).map(() => ({
   'src': `http://picsum.photos/300/200?r=${getRandom(1, 1000)}`,
   'description': generateDescription(),
 }));
 
-export const generateDestination = () => ({
-  'description': generateDescription(),
-  'name': CITIES[Math.floor(Math.random() * CITIES.length)],
-  'pictures': generatePhotos(),
-});
+// const generateDestination = () => ({
+//   'description': generateDescription(),
+//   'name': CITIES[Math.floor(Math.random() * CITIES.length)],
+//   'pictures': generatePhotos(),
+// });
+
+export const destination = [
+  {
+    'description': generateDescription(),
+    'name': 'Chamonix',
+    'pictures': generatePhotos(),
+  },
+  {
+    'description': generateDescription(),
+    'name': 'Geneva',
+    'pictures': generatePhotos(),
+  },
+  {
+    'description': generateDescription(),
+    'name': 'Paris',
+    'pictures': generatePhotos(),
+  },
+  {
+    'description': generateDescription(),
+    'name': 'London',
+    'pictures': generatePhotos(),
+  },
+  {
+    'description': generateDescription(),
+    'name': 'Amsterdame',
+    'pictures': generatePhotos(),
+  },
+  {
+    'description': generateDescription(),
+    'name': 'Rome',
+    'pictures': generatePhotos(),
+  },
+  {
+    'description': generateDescription(),
+    'name': 'Barselona',
+    'pictures': generatePhotos(),
+  },
+  {
+    'description': generateDescription(),
+    'name': 'Berlin',
+    'pictures': generatePhotos(),
+  },
+  {
+    'description': generateDescription(),
+    'name': 'Hamburg',
+    'pictures': generatePhotos(),
+  },
+  {
+    'description': generateDescription(),
+    'name': 'Dusseldorf',
+    'pictures': generatePhotos(),
+  },
+  {
+    'description': generateDescription(),
+    'name': 'Lisbon',
+    'pictures': generatePhotos(),
+  },
+  {
+    'description': generateDescription(),
+    'name': 'Madrid',
+    'pictures': generatePhotos(),
+  },
+];

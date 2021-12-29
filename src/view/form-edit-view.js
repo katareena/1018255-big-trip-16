@@ -30,33 +30,29 @@ const createOfferItems = (offers) => offers.map((offer) => (
     </label>
   </div>`)).join('');
 
-const createOffersBlock = (offers) => {
-  if (offers.length <= 0) {
-    return '';
-  } else {
-    return (
-      `<section class="event__section  event__section--offers">
-        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-        <div class="event__available-offers">
-          ${createOfferItems(offers)}
-        </div>
-      </section>`
-    );
-  }
-};
+const createOffersBlock = (offers) => (
+  `<section class="event__section  event__section--offers">
+    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+    <div class="event__available-offers">
+      ${createOfferItems(offers)}
+    </div>
+  </section>`
+);
 
 const createTypesList = () => uniqTypes.map((type) => (
   `<div class="event__type-item">
-    <input id="event-type-${type}-1"
-      class="event__type-input
-      visually-hidden"
+    <input
+      id="event-type-${type}-1"
+      class="event__type-input  visually-hidden"
       type="radio"
       name="event-type"
       value="${type}"
     >
-    <label class="event__type-label
-      event__type-label--${type}"
-      for="event-type-${type}-1">${type[0].toUpperCase() + type.slice(1)}
+    <label
+      class="event__type-label  event__type-label--${type}"
+      for="event-type-${type}-1"
+    >
+    ${type[0].toUpperCase() + type.slice(1)}
     </label>
   </div>`
 )).join('');
@@ -73,7 +69,7 @@ const createRollupBtn = (formType) => {
   }
 };
 
-const nameBtn = (formType) => {
+const createNameBtn = (formType) => {
   if(formType === 'form-edit') {
     return 'Delete';
   } else {
@@ -81,8 +77,53 @@ const nameBtn = (formType) => {
   }
 };
 
-const createFormEditTemplate = (point, formType) => {
-  const {id, type, basePrice, dateFrom, dateTo, destination: {name, description, pictures}, offers} = point;
+const createDetailsBlock = (offers, description, pictures, isOffers, isDescription, isPicture) => {
+  if(!isOffers && !isDescription && !isPicture) {
+    return '';
+  }
+
+  if(isOffers && !isDescription && !isPicture) {
+    return(
+      `<section class="event__details">
+        ${createOffersBlock(offers)}
+      </section>`
+    );
+  }
+
+  if(!isOffers && (isDescription || isPicture)) {
+    return(
+      `<section class="event__details">
+
+        <section class="event__section  event__section--destination">
+          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+
+          ${isDescription ? `<p class="event__destination-description">${description}</p>` : ''}
+
+          ${isPicture ? createPhotosBlock(pictures) : ''}
+
+        </section>
+      </section>`
+    );
+  }
+
+  return(
+    `<section class="event__details">
+      ${createOffersBlock(offers)}
+
+      <section class="event__section  event__section--destination">
+        <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+        <p class="event__destination-description">${description}</p>
+
+        ${createPhotosBlock(pictures)}
+
+      </section>
+    </section>`
+  );
+
+};
+
+const createFormEditTemplate = (data, formType) => {
+  const {id, type, basePrice, dateFrom, dateTo, destination: {name, description, pictures}, offers, isOffers, isDescription, isPicture} = data;
   const dateFromPoint = dayjs(dateFrom).format(Date.full);
   const dateToPoint = dayjs(dateTo).format(Date.full);
 
@@ -132,39 +173,63 @@ const createFormEditTemplate = (point, formType) => {
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">${nameBtn(formType)}</button>
+          <button class="event__reset-btn" type="reset">${createNameBtn(formType)}</button>
 
           ${createRollupBtn(formType)}
 
         </header>
-        <section class="event__details">
-          ${createOffersBlock(offers)}
 
-          <section class="event__section  event__section--destination">
-            <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description">${description}</p>
+        ${createDetailsBlock(offers, description, pictures, isOffers, isDescription, isPicture)}
 
-            ${createPhotosBlock(pictures)}
-
-          </section>
-        </section>
       </form>
     </li>`
   );
 };
 
 export default class FormEditView extends AbstractView {
-  #point = null;
+  _data = null; // состояние
   #formType = null;
 
   constructor(point, formType) {
     super();
-    this.#point = point;
+    this._data = FormEditView.parsePointToData(point); // записываем поступившие данные как состояние
     this.#formType = formType;
+
+    this.#setInnerHandlers();
   }
 
   get template() {
-    return createFormEditTemplate(this.#point, this.#formType);
+    return createFormEditTemplate(this._data, this.#formType);
+  }
+
+  updateData = (update) => {
+    if (!update) {
+      return;
+    }
+
+    this._data = {...this._data, ...update};
+
+    this.updateElement();
+  }
+
+  updateElement = () => { // обновление елемента НЕ компонента
+    const prevElement = this.element;
+    const parent = prevElement.parentElement;
+    this.removeElement();
+
+    // изменение вфеф
+
+    const newElement = this.element;
+
+    parent.replaceChild(newElement, prevElement);
+
+    this.restoreHandlers();
+  }
+
+  restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setSubmitFormHandler(this._callback.formSubmit);
+    this.setCloseClickFormHandler(this._callback.clickClose);
   }
 
   setCloseClickFormHandler = (callback) => {
@@ -184,6 +249,56 @@ export default class FormEditView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(this.#point);
+    this._callback.formSubmit(FormEditView.parsePointToData(this._data));
+  }
+
+  #setInnerHandlers = () => {
+    this.element.querySelector('.event__type-input').addEventListener('change', this.#typeToggleHandler);
+    this.element.querySelector('.event__input').addEventListener('change', this.#cityToggleHandler);
+  }
+
+  #typeToggleHandler = () => {
+    // console.log(evt.target.value);
+    this.updateData({
+      // type: evt.target.value,
+      isOffers: !this._data.isOffers,
+    });
+  }
+
+  #cityToggleHandler = () => {
+    this.updateData({
+      isDescription: !this._data.isDescription,
+      isPicture: !this._data.isPicture,
+    });
+  }
+
+  static parsePointToData = (point) => ({...point,
+    isOffers: point.offers.length !== 0,
+    isDescription: point.destination.description.length !== 0,
+    isPicture: point.destination.pictures.length !== 0,
+  });
+
+  // data - состояние  point - данные/информация
+
+  static parseDataToPoint = (data) => {
+    const point = {...data};
+
+    if (!point.isOffers) {
+      point.isOffers = [];
+    }
+
+    if (!point.isDescription) {
+      point.isDescription = [];
+    }
+
+    if (!point.isPicture) {
+      point.isPicture = [];
+    }
+
+    delete point.isOffers;
+    delete point.isDescription;
+    delete point.isPicture;
+
+    return point;
   }
 }
