@@ -1,8 +1,9 @@
 import dayjs from 'dayjs';
-import AbstractView from './abstract-view.js';
+import SmartView from './smart-view.js';
 import {Date} from '../consts/dates.js';
-import {CITIES} from '../mock/destination.js';
+import {CITIES, destination as currentDestinations} from '../mock/destination.js';
 import {uniqTypes} from '../mock/types.js';
+import {offers as currentOffers} from '../mock/offer.js';
 
 const createPhotoItems = (photos) => photos.map((photo) => (
   `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`
@@ -17,7 +18,7 @@ const createPhotosBlock = (photos) => (
 );
 
 const createCityItems = (cities) => cities.map((city) => (
-  `<option value="${city}"></option>`
+  `<option class="event__option" value="${city}"></option>`
 )).join('');
 
 const createOfferItems = (offers) => offers.map((offer) => (
@@ -39,10 +40,10 @@ const createOffersBlock = (offers) => (
   </section>`
 );
 
-const createTypesList = () => uniqTypes.map((type) => (
+const createTypesList = (id) => uniqTypes.map((type) => (
   `<div class="event__type-item">
     <input
-      id="event-type-${type}-1"
+      id="event-type-${type}-${id}"
       class="event__type-input  visually-hidden"
       type="radio"
       name="event-type"
@@ -50,7 +51,7 @@ const createTypesList = () => uniqTypes.map((type) => (
     >
     <label
       class="event__type-label  event__type-label--${type}"
-      for="event-type-${type}-1"
+      for="event-type-${type}-${id}"
     >
     ${type[0].toUpperCase() + type.slice(1)}
     </label>
@@ -141,7 +142,7 @@ const createFormEditTemplate = (data, formType) => {
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
-                ${createTypesList()}
+                ${createTypesList(id)}
               </fieldset>
             </div>
           </div>
@@ -157,19 +158,19 @@ const createFormEditTemplate = (data, formType) => {
           </div>
 
           <div class="event__field-group  event__field-group--time">
-            <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFromPoint}">
+            <label class="visually-hidden" for="event-start-time-${id}">From</label>
+            <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value="${dateFromPoint}">
             &mdash;
-            <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateToPoint}">
+            <label class="visually-hidden" for="event-end-time-${id}">To</label>
+            <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value="${dateToPoint}">
           </div>
 
           <div class="event__field-group  event__field-group--price">
-            <label class="event__label" for="event-price-1">
+            <label class="event__label" for="event-price-${id}">
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+            <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${basePrice}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -186,7 +187,8 @@ const createFormEditTemplate = (data, formType) => {
   );
 };
 
-export default class FormEditView extends AbstractView {
+export default class FormEditView extends SmartView {
+  // data - состояние  point - данные/информация
   _data = null; // состояние
   #formType = null;
 
@@ -202,28 +204,10 @@ export default class FormEditView extends AbstractView {
     return createFormEditTemplate(this._data, this.#formType);
   }
 
-  updateData = (update) => {
-    if (!update) {
-      return;
-    }
-
-    this._data = {...this._data, ...update};
-
-    this.updateElement();
-  }
-
-  updateElement = () => { // обновление елемента НЕ компонента
-    const prevElement = this.element;
-    const parent = prevElement.parentElement;
-    this.removeElement();
-
-    // изменение вфеф
-
-    const newElement = this.element;
-
-    parent.replaceChild(newElement, prevElement);
-
-    this.restoreHandlers();
+  reset = (point) => {
+    this.updateData(
+      FormEditView.parsePointToData(point),
+    );
   }
 
   restoreHandlers = () => {
@@ -253,22 +237,45 @@ export default class FormEditView extends AbstractView {
   }
 
   #setInnerHandlers = () => {
-    this.element.querySelector('.event__type-input').addEventListener('change', this.#typeToggleHandler);
+    const inputsType = this.element.querySelectorAll('.event__type-input');
+    inputsType.forEach((input) => input.addEventListener('change', this.#typeToggleHandler));
     this.element.querySelector('.event__input').addEventListener('change', this.#cityToggleHandler);
+
+    const inputsTime = this.element.querySelectorAll('.event__input--time');
+    inputsTime.forEach((input) => input.addEventListener('change', this.#timeChangeHandler));
   }
 
-  #typeToggleHandler = () => {
-    // console.log(evt.target.value);
+  #timeChangeHandler = (evt) => {
+    evt.preventDefault();
     this.updateData({
-      // type: evt.target.value,
-      isOffers: !this._data.isOffers,
+      dateFrom: evt.target.value,
+      dateTo: evt.target.value, // запрещен ввод даты по ТЗ
+    }, true); // true это параметр justDataUpdating
+  }
+
+  #typeToggleHandler = (evt) => {
+    const newType = evt.target.value;
+    const newOffers = currentOffers.filter((offer) => offer.type === newType)[0].offers;
+    this.updateData({
+      type: newType,
+      offers: newOffers,
+      isOffers: newOffers.length !== 0,
     });
   }
 
-  #cityToggleHandler = () => {
+  #cityToggleHandler = (evt) => {
+    const newCity = evt.target.value;
+    const newDescription = currentDestinations.filter((destination) => destination.name === newCity)[0].description;
+    const newPicture = currentDestinations.filter((destination) => destination.name === newCity)[0].pictures;
+
     this.updateData({
-      isDescription: !this._data.isDescription,
-      isPicture: !this._data.isPicture,
+      destination: {
+        name: newCity,
+        description: newDescription,
+        pictures: newPicture,
+      },
+      isDescription: newDescription.length !== 0,
+      isPicture: newPicture.length!== 0,
     });
   }
 
@@ -277,8 +284,6 @@ export default class FormEditView extends AbstractView {
     isDescription: point.destination.description.length !== 0,
     isPicture: point.destination.pictures.length !== 0,
   });
-
-  // data - состояние  point - данные/информация
 
   static parseDataToPoint = (data) => {
     const point = {...data};
