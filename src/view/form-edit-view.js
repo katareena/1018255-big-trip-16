@@ -1,9 +1,12 @@
-import dayjs from 'dayjs';
+import flatpickr from 'flatpickr';
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+
 import SmartView from './smart-view.js';
 import {Date} from '../consts/dates.js';
 import {CITIES, destination as currentDestinations} from '../mock/destination.js';
 import {uniqTypes} from '../mock/types.js';
 import {offers as currentOffers} from '../mock/offer.js';
+import {formatPointDate} from '../utils/dates.js';
 
 const createPhotoItems = (photos) => photos.map((photo) => (
   `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`
@@ -125,8 +128,8 @@ const createDetailsBlock = (offers, description, pictures, isOffers, isDescripti
 
 const createFormEditTemplate = (data, formType) => {
   const {id, type, basePrice, dateFrom, dateTo, destination: {name, description, pictures}, offers, isOffers, isDescription, isPicture} = data;
-  const dateFromPoint = dayjs(dateFrom).format(Date.full);
-  const dateToPoint = dayjs(dateTo).format(Date.full);
+  const dateFromPoint = formatPointDate(dateFrom, Date.full);
+  const dateToPoint = formatPointDate(dateTo, Date.full);
 
   return (
     `<li class="trip-events__item">
@@ -159,10 +162,10 @@ const createFormEditTemplate = (data, formType) => {
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-${id}">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value="${dateFromPoint}">
+            <input class="event__input  event__input--time  event-time-start" id="event-start-time-${id}" type="text" name="event-start-time" value="${dateFromPoint}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-${id}">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value="${dateToPoint}">
+            <input class="event__input  event__input--time event-time-end" id="event-end-time-${id}" type="text" name="event-end-time" value="${dateToPoint}">
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -191,6 +194,8 @@ export default class FormEditView extends SmartView {
   // data - состояние  point - данные/информация
   _data = null; // состояние
   #formType = null;
+  #datepickerFrom = null;
+  #datepickerTo = null;
 
   constructor(point, formType) {
     super();
@@ -198,10 +203,23 @@ export default class FormEditView extends SmartView {
     this.#formType = formType;
 
     this.#setInnerHandlers();
+    this.#setDatepicker();
   }
 
   get template() {
     return createFormEditTemplate(this._data, this.#formType);
+  }
+
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datepickerFrom && this.#datepickerTo) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
   }
 
   reset = (point) => {
@@ -214,6 +232,7 @@ export default class FormEditView extends SmartView {
     this.#setInnerHandlers();
     this.setSubmitFormHandler(this._callback.formSubmit);
     this.setCloseClickFormHandler(this._callback.clickClose);
+    this.#setDatepicker();
   }
 
   setCloseClickFormHandler = (callback) => {
@@ -236,21 +255,48 @@ export default class FormEditView extends SmartView {
     this._callback.formSubmit(FormEditView.parsePointToData(this._data));
   }
 
+  #setDatepicker = () => {
+    // flatpickr инициализируется всегда - поле даты не должно быть пустым
+
+    this.#datepickerFrom = flatpickr(
+      this.element.querySelector('.event-time-start'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._data.dateFrom,
+        onChange: this.#dateFromChangeHandler, // колбэк на событие flatpickr
+        maxDate: this._data.dateTo,
+      },
+    );
+
+    this.#datepickerTo = flatpickr(
+      this.element.querySelector('.event-time-end'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._data.dateTo,
+        onChange: this.#dateToChangeHandler, // колбэк на событие flatpickr
+        minDate: this._data.dateFrom,
+      },
+    );
+  }
+
   #setInnerHandlers = () => {
     const inputsType = this.element.querySelectorAll('.event__type-input');
     inputsType.forEach((input) => input.addEventListener('change', this.#typeToggleHandler));
     this.element.querySelector('.event__input').addEventListener('change', this.#cityToggleHandler);
-
-    const inputsTime = this.element.querySelectorAll('.event__input--time');
-    inputsTime.forEach((input) => input.addEventListener('change', this.#timeChangeHandler));
   }
 
-  #timeChangeHandler = (evt) => {
-    evt.preventDefault();
+  #dateFromChangeHandler = ([userDate]) => {
     this.updateData({
-      dateFrom: evt.target.value,
-      dateTo: evt.target.value, // запрещен ввод даты по ТЗ
-    }, true); // true это параметр justDataUpdating
+      dateFrom: userDate,
+    });
+  }
+
+  #dateToChangeHandler = ([userDate]) => {
+    this.updateData({
+      dateTo: userDate,
+    });
   }
 
   #typeToggleHandler = (evt) => {
