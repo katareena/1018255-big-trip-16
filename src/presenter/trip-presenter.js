@@ -4,7 +4,7 @@ import PointsContainerView from '../view/points-container-view.js';
 
 import PointPresenter from './point-presenter.js';
 
-import FormCreateView from '../view/form-create-view.js';
+import FormEditView from '../view/form-edit-view.js';
 import NoPointsView from '../view/no-points-view.js';
 
 import {render, RenderPosition} from '../utils/render.js';
@@ -12,9 +12,12 @@ import {MOCK_FOR_CREATE_FORM} from '../consts/common.js';
 import {updateItem} from '../utils/update-item.js';
 import {SortType} from '../consts/sort-type.js';
 import {sortPointTime, sortPointPrice} from '../utils/sorting-points.js';
+import {FormType} from '../consts/form-type.js';
 
 export default class TripPresenter {
   #tripContainer = null;
+  #newPointBtn = null;
+  #pointCreateComponent = null;
 
   #boardComponent = new BoardView();
   #sortingMenuComponent = new SortingMenuView();
@@ -25,15 +28,19 @@ export default class TripPresenter {
   #pointPreseters = new Map();
   #currentSortType = SortType.DAY;
   #sourcedPoints = [];
+  #formType = '';
 
-  constructor(tripContainer) {
+  constructor(tripContainer, newPointBtn) {
     this.#tripContainer = tripContainer;
+    this.#newPointBtn = newPointBtn;
   }
 
   init = (points) => {
     this.#points = [...points];
     this.#sourcedPoints = [...points]; // сохранение исходного порядка(для сортировки)
     render(this.#tripContainer, this.#boardComponent, RenderPosition.AFTER_BEGIN);
+
+    this.#formType = FormType.NEW;
 
     this.#renderBoard();
   }
@@ -57,7 +64,7 @@ export default class TripPresenter {
         this.#points.sort(sortPointPrice);
         break;
       default:
-        // когда пользователь захочет "вернуть всё, как было" - запишем в _boardTasks исходный массив
+        // когда пользователь захочет "вернуть всё, как было" - запишем в #points исходный массив
         this.#points = [...this.#sourcedPoints];
     }
 
@@ -84,8 +91,8 @@ export default class TripPresenter {
     render(this.#boardComponent, this.#pointsContainerComponent, RenderPosition.BEFORE_END);
   }
 
-  #renderFormCreate = (index) => {
-    render(this.#pointsContainerComponent, new FormCreateView(this.#points[index]), RenderPosition.BEFORE_END);
+  #renderFormCreate = (index, formType) => {
+    render(this.#pointsContainerComponent, new FormEditView(this.#points[index], formType), RenderPosition.BEFORE_END);
   }
 
   #renderPoint = (point) => {
@@ -102,7 +109,7 @@ export default class TripPresenter {
 
   #clearPointList = () => {
     this.#pointPreseters.forEach((presenter) => presenter.destroy());
-    this.clear();
+    this.#pointPreseters.clear();
   }
 
   #renderNoPoints = () => {
@@ -118,7 +125,7 @@ export default class TripPresenter {
 
     this.#renderSort();
     this.#renderPointsContainer();
-    this.#renderFormCreate(this.#points.length - MOCK_FOR_CREATE_FORM);
+    this.#renderFormCreate(this.#points.length - MOCK_FOR_CREATE_FORM, this.#formType);
     this.#renderPointList();
   }
 }

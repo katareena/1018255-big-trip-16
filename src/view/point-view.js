@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import AbstractView from './abstract-view.js';
 import {Date} from '../consts/dates.js';
+import {formatPointDate} from '../utils/dates.js';
 
 import duration from 'dayjs/plugin/duration';
 dayjs.extend(duration);
@@ -34,14 +35,14 @@ const createOffersBlock = (offers) => {
 
 const getDiff = (dateTo, dateFrom) => {
   const diff = dayjs(dateTo).diff(dayjs(dateFrom));
-  return dayjs.duration(diff).format('D[D] H[H] m[M]');
+  return dayjs.duration(diff).format(Date.duration);
 };
 
 const createPointTemplate = ({type, basePrice, dateFrom, dateTo, destination: {name}, isFavorite, offers}) => {
-  const dateFromPoint = dayjs(dateFrom).format(Date.full);
-  const dateToPoint = dayjs(dateTo).format(Date.full);
-  const timeStart = dayjs(dateFrom).format(Date.time);
-  const timeEnd = dayjs(dateTo).format(Date.time);
+  const dateFromPoint = formatPointDate(dateFrom, Date.full);
+  const dateToPoint = formatPointDate(dateTo, Date.full);
+  const timeStart = formatPointDate(dateFrom, Date.time);
+  const timeEnd = formatPointDate(dateTo, Date.time);
 
   return (
     `<li class="trip-events__item">
@@ -72,7 +73,11 @@ const createPointTemplate = ({type, basePrice, dateFrom, dateTo, destination: {n
           <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
         </svg>
       </button>
-      <button class="event__rollup-btn" type="button">
+      <button
+        class="event__rollup-btn"
+        type="button"
+        id="edit-btn"
+      >
         <span class="visually-hidden">Open event</span>
       </button>
     </div>
