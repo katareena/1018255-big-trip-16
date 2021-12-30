@@ -10,14 +10,6 @@ const generateOffer = () => ({
   'price': getRandom(50, 200),
 });
 
-// const POINT_TYPE = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
-// const generateOffers = () => ({
-//   'type': getType(POINT_TYPE),
-//   'offers': Array.from({length: getRandom(0, 5)}, generateOffer),
-// });
-// export const offers = Array.from({length: POINT_TYPE.length}, generateOffers),
-// console.log(offers);
-
 export const offers = [
   {
     'type': 'taxi',

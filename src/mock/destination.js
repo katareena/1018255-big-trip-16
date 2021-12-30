@@ -23,12 +23,6 @@ const generatePhotos = () =>  new Array(getRandom(0, 6)).fill(undefined).map(() 
   'description': generateDescription(),
 }));
 
-// const generateDestination = () => ({
-//   'description': generateDescription(),
-//   'name': CITIES[Math.floor(Math.random() * CITIES.length)],
-//   'pictures': generatePhotos(),
-// });
-
 export const destination = [
   {
     'description': generateDescription(),
