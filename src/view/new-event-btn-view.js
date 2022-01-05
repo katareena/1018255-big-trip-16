@@ -15,13 +15,14 @@ export default class NewEventBtnView extends AbstractView {
     return newEventBtnTemplate();
   }
 
-  setCreateClickHandler = (callback) => {
+  setOpenClickHandler = (callback) => {
     this._callback.createClick = callback;
-    this.element.querySelector('.trip-main__event-add-btn').addEventListener('click', this.#clickOnBtnHandler);
+    this.element.addEventListener('click', this.#clickOnBtnHandler);
   }
 
   #clickOnBtnHandler = (evt) => {
     evt.preventDefault();
     this._callback.createClick();
+    this.element.disabled = 'true';
   }
 }

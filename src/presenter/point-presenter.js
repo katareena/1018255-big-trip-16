@@ -2,7 +2,6 @@ import PointView from '../view/point-view.js';
 import FormEditView from '../view/form-edit-view.js';
 import {render, RenderPosition, replace, remove} from '../utils/render.js';
 import {Mode} from '../consts/common.js';
-import {FormType} from '../consts/form-type.js';
 
 export default class PointPresenter {
   #pointListContainer = null;
@@ -15,6 +14,7 @@ export default class PointPresenter {
 
   #point = null;
   #mode = Mode.DEFAULT;
+  #formType = '';
 
   constructor(pointListContainer, changeData, changeMode) { //changeData = callback = #handlePointChange при создании point-presetner в trip-presetner на 54 строке
     this.#pointListContainer = pointListContainer;
@@ -22,14 +22,15 @@ export default class PointPresenter {
     this.#changeMode = changeMode;
   }
 
-  init = (point) => {
+  init = (point, formType) => {
     this.#point = point;
+    this.#formType = formType;
 
     const prevPointComponent = this.#pointComponent; // сохранение предыдущих обязательно ДО создания новых
     const prevPointEditComponent = this.#pointEditComponent;
 
     this.#pointComponent = new PointView(point);
-    this.#pointEditComponent = new FormEditView(point, FormType.EDIT);
+    this.#pointEditComponent = new FormEditView(point, formType);
 
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
     this.#pointComponent.setFavoriteHandler(this.#handleFavoriteClick);

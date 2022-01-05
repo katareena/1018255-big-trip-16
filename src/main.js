@@ -26,3 +26,5 @@ render(headerFiltersBox, new FiltersView(), RenderPosition.BEFORE_END);
 render(headerInfoRouteBox, newPointBtnComponent, RenderPosition.BEFORE_END);
 
 tripPresenter.init(points);
+
+newPointBtnComponent.setOpenClickHandler(tripPresenter.renderFormCreate);

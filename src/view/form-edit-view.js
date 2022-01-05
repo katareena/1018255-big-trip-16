@@ -3,22 +3,12 @@ import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 import SmartView from './smart-view.js';
 import {Date} from '../consts/dates.js';
-import {CITIES, destination as currentDestinations} from '../mock/destination.js';
 import {uniqTypes} from '../mock/types.js';
-import {offers as currentOffers} from '../mock/offer.js';
 import {formatPointDate} from '../utils/dates.js';
 
-const createPhotoItems = (photos) => photos.map((photo) => (
-  `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`
-)).join('');
-
-const createPhotosBlock = (photos) => (
-  `<div class="event__photos-container">
-    <div class="event__photos-tape">
-      ${createPhotoItems(photos)}
-    </div>
-  </div>`
-);
+import {CITIES, destination as currentDestinations} from '../mock/destination.js';
+import {offers as currentOffers} from '../mock/offer.js';
+import {FormType} from '../consts/form-type.js';
 
 const createCityItems = (cities) => cities.map((city) => (
   `<option class="event__option" value="${city}"></option>`
@@ -81,6 +71,18 @@ const createNameBtn = (formType) => {
   }
 };
 
+const createPhotoItems = (photos) => photos?.map((photo) => (
+  `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`
+)).join('');
+
+const createPhotosBlock = (photos) => (
+  `<div class="event__photos-container">
+    <div class="event__photos-tape">
+      ${createPhotoItems(photos)}
+    </div>
+  </div>`
+);
+
 const createDetailsBlock = (offers, description, pictures, isOffers, isDescription, isPicture) => {
   if(!isOffers && !isDescription && !isPicture) {
     return '';
@@ -126,8 +128,10 @@ const createDetailsBlock = (offers, description, pictures, isOffers, isDescripti
 
 };
 
+const setId = (id = 0) => id;
+
 const createFormEditTemplate = (data, formType) => {
-  const {id, type, basePrice, dateFrom, dateTo, destination: {name, description, pictures}, offers, isOffers, isDescription, isPicture} = data;
+  const {id, type, basePrice, dateFrom, dateTo, destination, offers, isOffers, isDescription, isPicture} = data;
   const dateFromPoint = formatPointDate(dateFrom, Date.full);
   const dateToPoint = formatPointDate(dateTo, Date.full);
 
@@ -136,9 +140,9 @@ const createFormEditTemplate = (data, formType) => {
       <form class="event event--edit" action="#" method="post">
         <header class="event__header">
           <div class="event__type-wrapper">
-            <label class="event__type  event__type-btn" for="event-type-toggle-${id}">
+            <label class="event__type  event__type-btn" for="event-type-toggle-${setId(id)}">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" ${formType === 'form-edit' ? `src="img/icons/${type}.png"` : ''} alt="Event type icon">
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" type="checkbox">
 
@@ -152,9 +156,9 @@ const createFormEditTemplate = (data, formType) => {
 
           <div class="event__field-group  event__field-group--destination">
             <label class="event__label  event__type-output" for="event-destination-${id}">
-              ${type}
+              ${formType === 'form-edit' ? type : ''}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${name}" list="destination-list-${id}">
+            <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${formType === 'form-edit' ? destination.name : ''}" list="destination-list-${id}">
             <datalist id="destination-list-${id}">
               ${createCityItems(CITIES)}
             </datalist>
@@ -183,7 +187,7 @@ const createFormEditTemplate = (data, formType) => {
 
         </header>
 
-        ${createDetailsBlock(offers, description, pictures, isOffers, isDescription, isPicture)}
+        ${ formType === 'form-edit' ? createDetailsBlock(offers, destination.description, destination.pictures, isOffers, isDescription, isPicture) : ''}
 
       </form>
     </li>`
@@ -238,11 +242,13 @@ export default class FormEditView extends SmartView {
   setCloseClickFormHandler = (callback) => {
     this._callback.clickClose = callback;
     this.element.querySelector('.event__rollup-btn')?.addEventListener('click', this.#clickHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#clickHandler);
   }
 
   setSubmitFormHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+    this.#formType = FormType.EDIT;
   }
 
   #clickHandler = (evt) => {// чтобы контекст не потерялся специально используется стрелочная ф-я
@@ -326,9 +332,9 @@ export default class FormEditView extends SmartView {
   }
 
   static parsePointToData = (point) => ({...point,
-    isOffers: point.offers.length !== 0,
-    isDescription: point.destination.description.length !== 0,
-    isPicture: point.destination.pictures.length !== 0,
+    isOffers: point.offers?.length !== 0,
+    isDescription: point.destination?.description?.length !== 0,
+    isPicture: point.destination?.pictures?.length !== 0,
   });
 
   static parseDataToPoint = (data) => {
