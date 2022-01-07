@@ -177,7 +177,7 @@ const createFormEditTemplate = (data, formType) => {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${basePrice}">
+            <input class="event__input  event__input--price" id="event-price-${id}" type="text" pattern="^[0-9]+$" name="event-price" value="${basePrice}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -291,6 +291,14 @@ export default class FormEditView extends SmartView {
     const inputsType = this.element.querySelectorAll('.event__type-input');
     inputsType.forEach((input) => input.addEventListener('change', this.#typeToggleHandler));
     this.element.querySelector('.event__input').addEventListener('change', this.#cityToggleHandler);
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
+  }
+
+  #priceInputHandler = (evt) => {
+    evt.preventDefault();
+    this.updateData({
+      basePrice: Math.ceil(Math.abs(evt.target.value)),
+    }, true); // true это параметр justDataUpdating в updateData
   }
 
   #dateFromChangeHandler = ([userDate]) => {
