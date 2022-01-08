@@ -23,7 +23,7 @@ export default class PointsModel extends AbstractObservable {
     this._notify(updateType, updatePoint);
   }
 
-  addTask = (updateType, updatePoint) => {
+  addPoint = (updateType, updatePoint) => {
     this.#points = [
       updatePoint,
       ...this.#points,
@@ -32,7 +32,7 @@ export default class PointsModel extends AbstractObservable {
     this._notify(updateType, updatePoint);
   }
 
-  deleteTask = (updateType, updatePoint) => {
+  deletePoint = (updateType, updatePoint) => {
     const updateIndex = this.#points.findIndex((point) => point.id === updatePoint.id);
 
     if (updateIndex === -1) {

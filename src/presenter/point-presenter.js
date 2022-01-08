@@ -32,10 +32,11 @@ export default class PointPresenter {
     this.#pointComponent = new PointView(point);
     this.#pointEditComponent = new FormEditView(point, formType);
 
-    this.#pointComponent.setEditClickHandler(this.#handleEditClick);
+    this.#pointComponent.setEditClickHandler(this.#handleOpenEditForm);
     this.#pointComponent.setFavoriteHandler(this.#handleFavoriteClick);
     this.#pointEditComponent.setSubmitFormHandler(this.#handleSubmitForm);
     this.#pointEditComponent.setCloseClickFormHandler(this.#handleCloseForm);
+    this.#pointEditComponent.setDeleteClickFormHandler(this.#handleDeleteForm);
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
       render(this.#pointListContainer, this.#pointComponent, RenderPosition.BEFORE_END);
@@ -88,12 +89,35 @@ export default class PointPresenter {
     this.#mode = Mode.DEFAULT;
   }
 
-  #handleEditClick = () => {
+  #handleOpenEditForm = () => {
     this.#replacePointToEditForm();
     document.addEventListener('keydown', this.#onEscKeyDown);
     this.#changeMode();
     this.#mode = Mode.EDITING;
   };
+
+  #handleSubmitForm = (updatePoint) => {
+    const isPathUpdate = this.#point.type !== updatePoint.type;
+
+    this.#changeData(
+      UserAction.UPDATE_POINT,
+      isPathUpdate ? UpdateType.PATCH : UpdateType.MINOR,
+      updatePoint,
+    );
+    this.#closeEditForm();
+  }
+
+  #handleCloseForm = () => {
+    this.#closeEditForm();
+  }
+
+  #handleDeleteForm = (point) => {
+    this.#changeData(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
+  }
 
   #handleFavoriteClick = () => {
     this.#changeData(
@@ -101,18 +125,5 @@ export default class PointPresenter {
       UpdateType.MINOR,
       {...this.#point, isFavorite: !this.#point.isFavorite},
     );
-  }
-
-  #handleSubmitForm = (point) => {
-    this.#changeData(
-      UserAction.UPDATE_POINT,
-      UpdateType.MINOR,
-      point,
-    );
-    this.#closeEditForm();
-  }
-
-  #handleCloseForm = () => {
-    this.#closeEditForm();
   }
 }

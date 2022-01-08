@@ -236,19 +236,29 @@ export default class FormEditView extends SmartView {
     this.#setInnerHandlers();
     this.setSubmitFormHandler(this._callback.formSubmit);
     this.setCloseClickFormHandler(this._callback.clickClose);
+    this.setDeleteClickFormHandler(this._callback.clickDelete);
     this.#setDatepicker();
   }
 
   setCloseClickFormHandler = (callback) => {
     this._callback.clickClose = callback;
     this.element.querySelector('.event__rollup-btn')?.addEventListener('click', this.#clickHandler);
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#clickHandler);
+  }
+
+  setDeleteClickFormHandler = (callback) => {
+    this._callback.clickDelete = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteHandler);
   }
 
   setSubmitFormHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     this.#formType = FormType.EDIT;
+  }
+
+  #deleteHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.clickDelete(this._data);
   }
 
   #clickHandler = (evt) => {// чтобы контекст не потерялся специально используется стрелочная ф-я

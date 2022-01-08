@@ -10,7 +10,7 @@ import PointPresenter from './point-presenter.js';
 import FormEditView from '../view/form-edit-view.js';
 import NoPointsView from '../view/no-points-view.js';
 
-import {render, RenderPosition} from '../utils/render.js';
+import {render, remove, RenderPosition} from '../utils/render.js';
 import {SortType} from '../consts/sort-type.js';
 import {sortPointTime, sortPointPrice} from '../utils/sorting-points.js';
 import {FormType} from '../consts/form-type.js';
@@ -34,7 +34,7 @@ export default class TripPresenter {
   #pointCreateComponent = null;
 
   #tripComponent = new TripView();
-  #sortingMenuComponent = new SortingMenuView();
+  #sortingMenuComponent = null;
   #pointsContainerComponent = new PointsContainerView();
   #noPointsComponent = new NoPointsView();
 
@@ -70,24 +70,20 @@ export default class TripPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   }
 
-  // #handlePointChange = (updatedPoint) => {
-  //   this.#pointPresenters.get(updatedPoint.id).init(updatedPoint); // обновление модели
-  // }
-
   #handleViewAction = (actionType, updateType, updatePoint) => {
     // Здесь будем вызывать обновление модели.
     // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
     // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
     // updatePoint - обновленные данные
     switch (actionType) {
-      case UserAction.UPDATE_TASK:
-        this.#pointsModel.updateTask(updateType, updatePoint);
+      case UserAction.UPDATE_POINT:
+        this.#pointsModel.updatePoint(updateType, updatePoint);
         break;
-      case UserAction.ADD_TASK:
-        this.#pointsModel.addTask(updateType, updatePoint);
+      case UserAction.ADD_POINT:
+        this.#pointsModel.addPoint(updateType, updatePoint);
         break;
-      case UserAction.DELETE_TASK:
-        this.#pointsModel.deleteTask(updateType, updatePoint);
+      case UserAction.DELETE_POINT:
+        this.#pointsModel.deletePoint(updateType, updatePoint);
         break;
     }
   }
@@ -99,14 +95,18 @@ export default class TripPresenter {
     // - обновить всю доску (например, при переключении фильтра)
     switch (updateType) {
       case UpdateType.PATCH:
-        // - обновить часть списка (например, когда поменялось описание)
+        // - обновить часть списка
         this.#pointPresenters.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
-        // - обновить список (например, когда задача ушла в архив)
+        // - обновить список
+        this.#clearBoard();
+        this.#renderBoard();
         break;
       case UpdateType.MAJOR:
-        // - обновить всю доску (например, при переключении фильтра)
+        // - обновить всю доску
+        this.#clearBoard({resetSortType: true});
+        this.#renderBoard();
         break;
     }
   }
@@ -118,12 +118,13 @@ export default class TripPresenter {
 
     this.#currentSortType = sortType;
     this.#clearPoints();
-    this.#renderPoints();
+    this.#renderPoints(this.points);
   }
 
-  #renderSort = () => {
-    render(this.#tripComponent, this.#sortingMenuComponent, RenderPosition.AFTER_BEGIN);
+  #renderSortMenu = () => {
+    this.#sortingMenuComponent = new SortingMenuView();
     this.#sortingMenuComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
+    render(this.#tripComponent, this.#sortingMenuComponent, RenderPosition.AFTER_BEGIN);
   }
 
   renderFormCreate = (point = BLANK_OFFER) => {
@@ -149,6 +150,18 @@ export default class TripPresenter {
     this.#pointPresenters.clear();
   }
 
+  #clearBoard = ({resetSortType = false} = {}) => {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
+
+    remove(this.#sortingMenuComponent);
+    remove(this.#noPointsComponent);
+
+    if (resetSortType) {
+      this.#currentSortType = SortType.DAY;
+    }
+  }
+
   #renderNoPoints = () => {
     render(this.#tripContainer, this.#tripComponent, RenderPosition.AFTER_BEGIN);
     render(this.#tripComponent, this.#noPointsComponent, RenderPosition.BEFORE_END);
@@ -160,7 +173,7 @@ export default class TripPresenter {
       return;
     }
 
-    this.#renderSort();
+    this.#renderSortMenu();
     this.#renderPointsContainer();
     this.#renderPoints(this.points);
   }

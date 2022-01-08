@@ -26,8 +26,6 @@ if (points.length !== 0) {
   render(headerInfoRouteBox, new InfoRouteView(points), RenderPosition.AFTER_BEGIN);
 }
 
-console.log('main', points);
-
 render(headerMenuBox, new SiteMenuView(), RenderPosition.BEFORE_END);
 render(headerFiltersBox, new FiltersView(), RenderPosition.BEFORE_END);
 render(headerInfoRouteBox, newPointBtnComponent, RenderPosition.BEFORE_END);
