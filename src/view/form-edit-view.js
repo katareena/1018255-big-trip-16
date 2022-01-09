@@ -128,8 +128,6 @@ const createDetailsBlock = (offers, description, pictures, isOffers, isDescripti
 
 };
 
-const setId = (id = 0) => id;
-
 const createFormEditTemplate = (data, formType) => {
   const {id, type, basePrice, dateFrom, dateTo, destination, offers, isOffers, isDescription, isPicture} = data;
   const dateFromPoint = formatPointDate(dateFrom, Date.full);
@@ -140,7 +138,7 @@ const createFormEditTemplate = (data, formType) => {
       <form class="event event--edit" action="#" method="post">
         <header class="event__header">
           <div class="event__type-wrapper">
-            <label class="event__type  event__type-btn" for="event-type-toggle-${setId(id)}">
+            <label class="event__type  event__type-btn" for="event-type-toggle-${id}">
               <span class="visually-hidden">Choose event type</span>
               ${formType === 'form-edit' && type ? `<img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type">` : '' }
             </label>
@@ -158,7 +156,7 @@ const createFormEditTemplate = (data, formType) => {
             <label class="event__label  event__type-output" for="event-destination-${id}">
               ${formType === 'form-edit' ? type : ''}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${formType === 'form-edit' && destination.name ? destination.name : ''}" list="destination-list-${id}">
+            <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${formType === 'form-edit' && destination.name ? destination.name : ''}" list="destination-list-${id}" autocomplete="off">
             <datalist id="destination-list-${id}">
               ${createCityItems(CITIES)}
             </datalist>
@@ -187,7 +185,7 @@ const createFormEditTemplate = (data, formType) => {
 
         </header>
 
-        ${ formType === 'form-edit' ? createDetailsBlock(offers, destination.description, destination.pictures, isOffers, isDescription, isPicture) : ''}
+        ${ formType === 'form-edit' && destination.description ? createDetailsBlock(offers, destination.description, destination.pictures, isOffers, isDescription, isPicture) : ''}
 
       </form>
     </li>`
@@ -202,7 +200,6 @@ export default class FormEditView extends SmartView {
   #datepickerTo = null;
 
   constructor(point, formType) {
-    console.log(formType);
     super();
     this._data = FormEditView.parsePointToData(point); // записываем поступившие данные как состояние
     this.#formType = formType;
@@ -269,12 +266,15 @@ export default class FormEditView extends SmartView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
+
+    if(this._data.type === '' || this._data.destination.name === '') {
+      return;
+    }
+
     this._callback.formSubmit(FormEditView.parsePointToData(this._data));
   }
 
   #setDatepicker = () => {
-    // flatpickr инициализируется всегда - поле даты не должно быть пустым
-
     this.#datepickerFrom = flatpickr(
       this.element.querySelector('.event-time-start'),
       {
@@ -301,7 +301,7 @@ export default class FormEditView extends SmartView {
   #setInnerHandlers = () => {
     const inputsType = this.element.querySelectorAll('.event__type-input');
     inputsType.forEach((input) => input.addEventListener('change', this.#typeToggleHandler));
-    this.element.querySelector('.event__input').addEventListener('change', this.#cityToggleHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('input', this.#cityToggleHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
   }
 
@@ -335,9 +335,21 @@ export default class FormEditView extends SmartView {
   }
 
   #cityToggleHandler = (evt) => {
-    const newCity = evt.target.value;
+    let newCity = '';
+
+    for(let i = 0; i < CITIES.length; i++) {
+      if(CITIES[i] === evt.target.value) {
+        newCity = CITIES[i];
+        break;
+      }
+    }
+
+    if (newCity === '') {
+      return;
+    }
+
     const newDescription = currentDestinations.filter((destination) => destination.name === newCity)[0].description;
-    const newPicture = currentDestinations.filter((destination) => destination.name === newCity)[0].pictures;
+    const newPicture = newCity && currentDestinations.filter((destination) => destination.name === newCity)[0].pictures;
 
     this.updateData({
       destination: {

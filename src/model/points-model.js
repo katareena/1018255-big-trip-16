@@ -39,11 +39,6 @@ export default class PointsModel extends AbstractObservable {
       throw new Error('Can\'t delete unexisting task');
     }
 
-    // this.#points = [
-    //   ...this.#points.slice(0, updateIndex),
-    //   ...this.#points.slice(updateIndex + 1),
-    // ];
-
     this.#points.splice(updateIndex, 1); // удаляет 1 элемент по индексу updateIndex // splice() изменяет содержимое массива
 
     this._notify(updateType);

@@ -1,4 +1,3 @@
-// import PointView from '../view/point-view.js';
 import dayjs from 'dayjs';
 import {nanoid} from 'nanoid';
 import FormEditView from '../view/form-edit-view.js';
@@ -12,11 +11,10 @@ const BLANK_OFFER = {
   'id': nanoid(5),
   'isFavorite': '',
   'type': '',
-  'destination': [{
+  'destination': {
     'description': '',
     'name': '',
-    // 'pictures': '',
-  }],
+  },
   'offers': [],
 };
 

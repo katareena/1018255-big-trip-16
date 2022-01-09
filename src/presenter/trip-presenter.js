@@ -1,34 +1,17 @@
-import dayjs from 'dayjs';
-import {nanoid} from 'nanoid';
-
 import TripView from '../view/trip-view.js';
 import SortingMenuView from '../view/sorting-view.js';
 import PointsContainerView from '../view/points-container-view.js';
+import NoPointsView from '../view/no-points-view.js';
 
 import PointPresenter from './point-presenter.js';
 import PointNewPresenter from './point-new-presenter.js';
 
-import FormEditView from '../view/form-edit-view.js';
-import NoPointsView from '../view/no-points-view.js';
-
+import {filter} from '../utils/filter.js';
 import {render, remove, RenderPosition} from '../utils/render.js';
 import {SortType} from '../consts/sort-type.js';
 import {sortPointTime, sortPointPrice} from '../utils/sorting-points.js';
 import {FormType} from '../consts/form-type.js';
 import {UserAction, UpdateType, FilterType} from '../consts/common.js';
-import {filter} from '../utils/filter.js';
-// import { lowerFirst } from 'lodash';
-
-const BLANK_OFFER = {
-  'basePrice': '',
-  'dateFrom': dayjs().toDate(),
-  'dateTo': dayjs().toDate(),
-  'id': nanoid(5),
-  'isFavorite': '',
-  'type': '',
-  'destination': [],
-  'offers': [],
-};
 
 export default class TripPresenter {
   #tripContainer = null;
@@ -85,10 +68,6 @@ export default class TripPresenter {
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#pointNewPresenter.init(FormType.NEW);
   }
-
-  // renderFormCreate = (point = BLANK_OFFER) => {
-  //   render(this.#pointsContainerComponent, new FormEditView(point, FormType.NEW), RenderPosition.AFTER_BEGIN);
-  // }
 
   #handleModeChange = () => {
     this.#pointNewPresenter.destroy();

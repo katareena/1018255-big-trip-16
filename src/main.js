@@ -1,6 +1,5 @@
 import InfoRouteView from './view/info-route-view.js';
 import SiteMenuView from './view/site-menu-view.js';
-import FiltersView from './view/filters-view.js';
 import NewEventBtnView from './view/new-event-btn-view.js';
 
 import TripPresenter from './presenter/trip-presenter.js';
@@ -10,14 +9,12 @@ import PointsModel from './model/points-model.js';
 import FilterModel from './model/filter-model.js';
 
 import points from './mock/points.js';
-import {FilterType} from './consts/common.js';
 import {render, RenderPosition} from './utils/render.js';
 
 const pointsModel = new PointsModel();
 pointsModel.points = points;
 
 const filterModel = new FilterModel();
-
 
 const siteHeaderElement = document.querySelector('.page-header');
 const headerInfoRouteBox = siteHeaderElement.querySelector('.trip-main');
@@ -35,15 +32,9 @@ if (points.length !== 0) {
 }
 
 render(headerMenuBox, new SiteMenuView(), RenderPosition.BEFORE_END);
-// render(headerFiltersBox, new FiltersView(FilterType.EVERYTHING), RenderPosition.BEFORE_END);
 filterPresenter.init();
 render(headerInfoRouteBox, newPointBtnComponent, RenderPosition.BEFORE_END);
 
 tripPresenter.init();
 
 newPointBtnComponent.setOpenClickHandler(tripPresenter.createPoint);
-
-// document.querySelector('#control__new-task').addEventListener('click', (evt) => {
-//   evt.preventDefault();
-//   boardPresenter.createTask();
-// });
