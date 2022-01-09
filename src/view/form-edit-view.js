@@ -142,7 +142,7 @@ const createFormEditTemplate = (data, formType) => {
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-${setId(id)}">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" ${formType === 'form-edit' ? `src="img/icons/${type}.png"` : ''} alt="Event type icon">
+              ${formType === 'form-edit' && type ? `<img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type">` : '' }
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" type="checkbox">
 
@@ -158,7 +158,7 @@ const createFormEditTemplate = (data, formType) => {
             <label class="event__label  event__type-output" for="event-destination-${id}">
               ${formType === 'form-edit' ? type : ''}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${formType === 'form-edit' ? destination.name : ''}" list="destination-list-${id}">
+            <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${formType === 'form-edit' && destination.name ? destination.name : ''}" list="destination-list-${id}">
             <datalist id="destination-list-${id}">
               ${createCityItems(CITIES)}
             </datalist>
@@ -202,6 +202,7 @@ export default class FormEditView extends SmartView {
   #datepickerTo = null;
 
   constructor(point, formType) {
+    console.log(formType);
     super();
     this._data = FormEditView.parsePointToData(point); // записываем поступившие данные как состояние
     this.#formType = formType;
