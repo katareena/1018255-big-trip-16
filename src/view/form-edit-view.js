@@ -281,7 +281,7 @@ export default class FormEditView extends SmartView {
   #setInnerHandlers = () => {
     const inputsType = this.element.querySelectorAll('.event__type-input');
     inputsType.forEach((input) => input.addEventListener('change', this.#typeToggleHandler));
-    this.element.querySelector('.event__input--destination').addEventListener('change', this.#cityToggleHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('input', this.#cityToggleHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
   }
 
