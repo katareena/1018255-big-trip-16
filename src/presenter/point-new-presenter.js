@@ -8,7 +8,7 @@ const BLANK_OFFER = {
   'basePrice': '',
   'dateFrom': dayjs().toDate(),
   'dateTo': dayjs().toDate(),
-  'id': nanoid(5),
+  'id': nanoid(5), // id потом будет приходить с сервера
   'isFavorite': '',
   'type': '',
   'destination': {
@@ -20,11 +20,8 @@ const BLANK_OFFER = {
 
 export default class PointNewPresenter {
   #pointListContainer = null;
-
   #changeData = null;
-
   #pointEditComponent = null;
-
   #point = null;
   #formType = '';
 

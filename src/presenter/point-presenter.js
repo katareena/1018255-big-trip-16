@@ -75,13 +75,6 @@ export default class PointPresenter {
     replace(this.#pointComponent, this.#pointEditComponent);
   };
 
-  #onEscKeyDown = (evt) => {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
-      evt.preventDefault();
-      this.#closeEditForm();
-    }
-  };
-
   #closeEditForm = () => {
     this.#pointEditComponent.reset(this.#point);
     this.#replaceEditFormToPoint();
@@ -126,4 +119,11 @@ export default class PointPresenter {
       {...this.#point, isFavorite: !this.#point.isFavorite},
     );
   }
+
+  #onEscKeyDown = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      this.#closeEditForm();
+    }
+  };
 }

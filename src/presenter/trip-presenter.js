@@ -30,7 +30,8 @@ export default class TripPresenter {
   #pointPresenters = new Map();
   #pointNewPresenter = null;
 
-  constructor(tripContainer, pointsModel, filterModel) { // в конструктор передается ТОЛЬКО жизненно необходимый элемент
+  // в конструктор передается ТОЛЬКО жизненно необходимые элементы
+  constructor(tripContainer, pointsModel, filterModel) {
     this.#tripContainer = tripContainer;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;

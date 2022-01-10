@@ -5,7 +5,6 @@ import {FilterType, UpdateType} from '../consts/common.js';
 export default class FilterPresenter {
   #filterContainer = null;
   #filterModel = null;
-
   #filterComponent = null;
 
   constructor(filterContainer, filterModel) {

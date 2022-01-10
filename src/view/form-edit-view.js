@@ -140,7 +140,7 @@ const createFormEditTemplate = (data, formType) => {
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-${id}">
               <span class="visually-hidden">Choose event type</span>
-              ${formType === 'form-edit' && type ? `<img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type">` : '' }
+              ${type === '' ? '' : `<img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">` }
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" type="checkbox">
 
@@ -175,7 +175,7 @@ const createFormEditTemplate = (data, formType) => {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-${id}" type="text" pattern="^[0-9]+$" name="event-price" value="${basePrice}">
+            <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${basePrice}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -254,26 +254,6 @@ export default class FormEditView extends SmartView {
     this.#formType = FormType.EDIT;
   }
 
-  #deleteHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.clickDelete(this._data);
-  }
-
-  #clickHandler = (evt) => {// чтобы контекст не потерялся специально используется стрелочная ф-я
-    evt.preventDefault();
-    this._callback.clickClose();
-  }
-
-  #formSubmitHandler = (evt) => {
-    evt.preventDefault();
-
-    if(this._data.type === '' || this._data.destination.name === '') {
-      return;
-    }
-
-    this._callback.formSubmit(FormEditView.parsePointToData(this._data));
-  }
-
   #setDatepicker = () => {
     this.#datepickerFrom = flatpickr(
       this.element.querySelector('.event-time-start'),
@@ -301,15 +281,8 @@ export default class FormEditView extends SmartView {
   #setInnerHandlers = () => {
     const inputsType = this.element.querySelectorAll('.event__type-input');
     inputsType.forEach((input) => input.addEventListener('change', this.#typeToggleHandler));
-    this.element.querySelector('.event__input--destination').addEventListener('input', this.#cityToggleHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#cityToggleHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
-  }
-
-  #priceInputHandler = (evt) => {
-    evt.preventDefault();
-    this.updateData({
-      basePrice: Math.ceil(Math.abs(evt.target.value)),
-    }, true); // true это параметр justDataUpdating в updateData
   }
 
   #dateFromChangeHandler = ([userDate]) => {
@@ -338,18 +311,19 @@ export default class FormEditView extends SmartView {
     let newCity = '';
 
     for(let i = 0; i < CITIES.length; i++) {
-      if(CITIES[i] === evt.target.value) {
+      if(evt.target.value.includes(CITIES[i])) {
         newCity = CITIES[i];
         break;
       }
     }
 
     if (newCity === '') {
+      evt.target.value = '';
       return;
     }
 
     const newDescription = currentDestinations.filter((destination) => destination.name === newCity)[0].description;
-    const newPicture = newCity && currentDestinations.filter((destination) => destination.name === newCity)[0].pictures;
+    const newPicture = currentDestinations.filter((destination) => destination.name === newCity)[0].pictures;
 
     this.updateData({
       destination: {
@@ -360,6 +334,37 @@ export default class FormEditView extends SmartView {
       isDescription: newDescription.length !== 0,
       isPicture: newPicture.length!== 0,
     });
+  }
+
+  #priceInputHandler = (evt) => {
+    evt.preventDefault();
+
+    const regex = /\D/g;
+    evt.target.value = evt.target.value.replace(regex, '');
+
+    this.updateData({
+      basePrice: Math.ceil(Math.abs(evt.target.value)),
+    }, true); // true это параметр justDataUpdating в updateData
+  }
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+
+    // if(this._data.type === '' || this._data.destination.name === '') {
+    //   return;
+    // }
+
+    this._callback.formSubmit(FormEditView.parsePointToData(this._data));
+  }
+
+  #deleteHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.clickDelete(this._data);
+  }
+
+  #clickHandler = (evt) => {// чтобы контекст не потерялся специально используется стрелочная ф-я
+    evt.preventDefault();
+    this._callback.clickClose();
   }
 
   static parsePointToData = (point) => ({...point,

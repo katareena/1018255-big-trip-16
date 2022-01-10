@@ -1,26 +1,5 @@
 import AbstractView from './abstract-view.js';
 
-// const setChecked = (currentFilterType, evt) => {
-//   console.log(evt.target.value);
-//   currentFilterType? === evt.target.value ? 'checked' : '';
-// };
-
-// ${setChecked(currentFilterType)}
-
-// const createFilterItemTemplate = (currentFilterType) => {
-//   `<div class="trip-filters__filter">
-//     <input
-//       id="filter-everything"
-//       class="trip-filters__filter-input  visually-hidden"
-//       type="radio"
-//       name="trip-filter"
-//       value="${type}"
-//       ${type === currentFilterType ? 'checked' : ''}
-//     >
-//     <label class="trip-filters__filter-label" for="filter-everything">Everything</label>
-//   </div>`
-// }
-
 const createFiltersTemplate = () => (
   `<form class="trip-filters" action="#" method="get">
     <div class="trip-filters__filter">
@@ -62,17 +41,6 @@ const createFiltersTemplate = () => (
 );
 
 export default class FiltersView extends AbstractView {
-  // #currentFilter = null;
-
-  // constructor(currentFilterType) {
-  //   super();
-  //   this.#currentFilter = currentFilterType;
-  // }
-
-  // get template() {
-  //   return createFiltersTemplate(this.#currentFilter);
-  // }
-
   get template() {
     return createFiltersTemplate();
   }
