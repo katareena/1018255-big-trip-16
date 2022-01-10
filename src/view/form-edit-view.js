@@ -52,7 +52,7 @@ const createTypesList = (id) => uniqTypes.map((type) => (
 )).join('');
 
 const createRollupBtn = (formType) => {
-  if(formType === 'form-edit') {
+  if (formType === 'form-edit') {
     return (
       `<button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
@@ -64,7 +64,7 @@ const createRollupBtn = (formType) => {
 };
 
 const createNameBtn = (formType) => {
-  if(formType === 'form-edit') {
+  if (formType === 'form-edit') {
     return 'Delete';
   } else {
     return 'Cancel';
@@ -84,11 +84,11 @@ const createPhotosBlock = (photos) => (
 );
 
 const createDetailsBlock = (offers, description, pictures, isOffers, isDescription, isPicture) => {
-  if(!isOffers && !isDescription && !isPicture) {
+  if (!isOffers && !isDescription && !isPicture) {
     return '';
   }
 
-  if(isOffers && !isDescription && !isPicture) {
+  if (isOffers && !isDescription && !isPicture) {
     return(
       `<section class="event__details">
         ${createOffersBlock(offers)}
@@ -96,7 +96,7 @@ const createDetailsBlock = (offers, description, pictures, isOffers, isDescripti
     );
   }
 
-  if(!isOffers && (isDescription || isPicture)) {
+  if (!isOffers && (isDescription || isPicture)) {
     return(
       `<section class="event__details">
 
@@ -310,8 +310,8 @@ export default class FormEditView extends SmartView {
   #cityToggleHandler = (evt) => {
     let newCity = '';
 
-    for(let i = 0; i < CITIES.length; i++) {
-      if(evt.target.value.includes(CITIES[i])) {
+    for (let i = 0; i < CITIES.length; i++) {
+      if (evt.target.value.includes(CITIES[i])) {
         newCity = CITIES[i];
         break;
       }
@@ -344,13 +344,14 @@ export default class FormEditView extends SmartView {
 
     this.updateData({
       basePrice: Math.ceil(Math.abs(evt.target.value)),
-    }, true); // true это параметр justDataUpdating в updateData
+    },
+    true); // true это параметр justDataUpdating в updateData
   }
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
 
-    // if(this._data.type === '' || this._data.destination.name === '') {
+    // if (this._data.type === '' || this._data.destination.name === '') {
     //   return;
     // }
 

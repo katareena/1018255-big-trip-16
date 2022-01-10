@@ -158,7 +158,7 @@ export default class TripPresenter {
 
     remove(this.#sortingMenuComponent);
 
-    if(this.#noPointsComponent) {
+    if (this.#noPointsComponent) {
       remove(this.#noPointsComponent);
     }
 

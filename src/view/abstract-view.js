@@ -5,7 +5,7 @@ export default class AbstractView {
   _callback = {};
 
   constructor() {
-    if(new.target === AbstractView) {
+    if (new.target === AbstractView) {
       throw new Error('Can\'t instantiate AbstractView, only concrete one.');
     }
   }

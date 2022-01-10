@@ -23,6 +23,5 @@ export default class NewEventBtnView extends AbstractView {
   #clickOnBtnHandler = (evt) => {
     evt.preventDefault();
     this._callback.createClick();
-    // this.element.disabled = 'true';
   }
 }
