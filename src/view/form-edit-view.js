@@ -284,6 +284,7 @@ export default class FormEditView extends SmartView {
 
   #typeToggleHandler = (evt) => {
     const newType = evt.target.value;
+
     const newOffers = currentOffers.filter((offer) => offer.type === newType)[0].offers;
     this.updateData({
       type: newType,
@@ -301,7 +302,7 @@ export default class FormEditView extends SmartView {
         this.element.querySelector('.event__input--destination').setCustomValidity('');
         break;
       } else {
-        this.element.querySelector('.event__input--destination').setCustomValidity('Выберите местоназначение из предложенного списка');
+        this.element.querySelector('.event__input--destination').setCustomValidity('Выберите место назначения из предложенного списка');
       }
     }
 
