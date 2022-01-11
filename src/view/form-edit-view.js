@@ -88,39 +88,25 @@ const createDetailsBlock = (offers, description, pictures, isOffers, isDescripti
     return '';
   }
 
-  if (isOffers && !isDescription && !isPicture) {
-    return(
+  if (isOffers && (!isDescription && !isPicture)) {
+    return (
       `<section class="event__details">
         ${createOffersBlock(offers)}
       </section>`
     );
   }
 
-  if (!isOffers && (isDescription || isPicture)) {
-    return(
-      `<section class="event__details">
-
-        <section class="event__section  event__section--destination">
-          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-
-          ${isDescription ? `<p class="event__destination-description">${description}</p>` : ''}
-
-          ${isPicture ? createPhotosBlock(pictures) : ''}
-
-        </section>
-      </section>`
-    );
-  }
-
-  return(
+  return (
     `<section class="event__details">
-      ${createOffersBlock(offers)}
+
+      ${isOffers ? createOffersBlock(offers) : ''}
 
       <section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${description}</p>
 
-        ${createPhotosBlock(pictures)}
+        ${isDescription ? `<p class="event__destination-description">${description}</p>` : ''}
+
+        ${isPicture ? createPhotosBlock(pictures) : ''}
 
       </section>
     </section>`
@@ -154,9 +140,9 @@ const createFormEditTemplate = (data, formType) => {
 
           <div class="event__field-group  event__field-group--destination">
             <label class="event__label  event__type-output" for="event-destination-${id}">
-              ${formType === 'form-edit' ? type : ''}
+              ${type === '' ? '' : type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${formType === 'form-edit' && destination.name ? destination.name : ''}" list="destination-list-${id}" autocomplete="off">
+            <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${destination.name ? destination.name : ''}" list="destination-list-${id}" autocomplete="off" required>
             <datalist id="destination-list-${id}">
               ${createCityItems(CITIES)}
             </datalist>
@@ -185,7 +171,7 @@ const createFormEditTemplate = (data, formType) => {
 
         </header>
 
-        ${ formType === 'form-edit' && destination.description ? createDetailsBlock(offers, destination.description, destination.pictures, isOffers, isDescription, isPicture) : ''}
+        ${createDetailsBlock(offers, destination.description, destination.pictures, isOffers, isDescription, isPicture)}
 
       </form>
     </li>`
@@ -251,7 +237,6 @@ export default class FormEditView extends SmartView {
   setSubmitFormHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
-    this.#formType = FormType.EDIT;
   }
 
   #setDatepicker = () => {
@@ -280,8 +265,8 @@ export default class FormEditView extends SmartView {
 
   #setInnerHandlers = () => {
     const inputsType = this.element.querySelectorAll('.event__type-input');
-    inputsType.forEach((input) => input.addEventListener('change', this.#typeToggleHandler));
-    this.element.querySelector('.event__input--destination').addEventListener('input', this.#cityToggleHandler);
+    inputsType.forEach((type) => type.addEventListener('change', this.#typeToggleHandler));
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#cityToggleHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
   }
 
@@ -313,12 +298,14 @@ export default class FormEditView extends SmartView {
     for (let i = 0; i < CITIES.length; i++) {
       if (evt.target.value.includes(CITIES[i])) {
         newCity = CITIES[i];
+        this.element.querySelector('.event__input--destination').setCustomValidity('');
         break;
+      } else {
+        this.element.querySelector('.event__input--destination').setCustomValidity('Выберите местоназначение из предложенного списка');
       }
     }
 
     if (newCity === '') {
-      evt.target.value = '';
       return;
     }
 
@@ -351,11 +338,12 @@ export default class FormEditView extends SmartView {
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
 
-    // if (this._data.type === '' || this._data.destination.name === '') {
-    //   return;
-    // }
+    if (!this._data.destination.name) {
+      return;
+    }
 
     this._callback.formSubmit(FormEditView.parsePointToData(this._data));
+    this.#formType = FormType.EDIT;
   }
 
   #deleteHandler = (evt) => {

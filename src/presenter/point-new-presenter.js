@@ -14,6 +14,7 @@ const BLANK_OFFER = {
   'destination': {
     'description': '',
     'name': '',
+    'pictures': [],
   },
   'offers': [],
 };
