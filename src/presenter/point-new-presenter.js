@@ -3,6 +3,7 @@ import {nanoid} from 'nanoid';
 import FormEditView from '../view/form-edit-view.js';
 import {render, RenderPosition, remove} from '../utils/render.js';
 import {UserAction, UpdateType} from '../consts/common.js';
+import {uniqTypes} from '../mock/types.js';
 
 const BLANK_OFFER = {
   'basePrice': '',
@@ -10,7 +11,7 @@ const BLANK_OFFER = {
   'dateTo': dayjs().toDate(),
   'id': nanoid(5), // id потом будет приходить с сервера
   'isFavorite': '',
-  'type': '',
+  'type': uniqTypes[0],
   'destination': {
     'description': '',
     'name': '',

@@ -343,10 +343,10 @@ export default class FormEditView extends SmartView {
       return;
     }
 
-    if (!this._data.type) {
-      this.element.querySelector('.event__type-toggle').checked = true;
-      return;
-    }
+    // if (!this._data.type) {
+    //   this.element.querySelector('.event__type-toggle').checked = true;
+    //   return;
+    // }
 
     this._callback.formSubmit(FormEditView.parsePointToData(this._data));
     this.#formType = FormType.EDIT;
