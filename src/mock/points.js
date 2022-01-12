@@ -3,15 +3,15 @@ import {nanoid} from 'nanoid';
 import toCamelCase from '../utils/to-camel-case.js';
 import getRandom from '../utils/get-random.js';
 import {NUMBER_OF_POINTS, LENGTH_OF_ID} from '../consts/common.js';
+import {TYPES} from '../consts/types.js';
 
 import {destination} from './destination.js';
 import {offers} from './offer.js';
 
 const BOOLEANS = [true, false];
-const POINT_TYPE = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
 const generatePoint = () => {
-  const type = POINT_TYPE[Math.floor(Math.random() * POINT_TYPE.length)];
+  const type = TYPES[Math.floor(Math.random() * TYPES.length)];
   const pointOffers = offers.filter((offer) => offer.type === type)[0].offers;
 
   return {

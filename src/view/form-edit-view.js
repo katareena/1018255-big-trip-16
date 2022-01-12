@@ -1,14 +1,14 @@
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
-
 import SmartView from './smart-view.js';
+import {CITIES} from '../consts/cities.js';
 import {Date} from '../consts/dates.js';
-import {uniqTypes} from '../mock/types.js';
-import {formatPointDate} from '../utils/dates.js';
-
-import {CITIES, destination as currentDestinations} from '../mock/destination.js';
-import {offers as currentOffers} from '../mock/offer.js';
+import {TYPES} from '../consts/types.js';
 import {FormType} from '../consts/form-type.js';
+import {formatPointDate} from '../utils/dates.js';
+import {destination as currentDestinations} from '../mock/destination.js';
+import {offers as currentOffers} from '../mock/offer.js';
+
 
 const createCityItems = (cities) => cities.map((city) => (
   `<option class="event__option" value="${city}"></option>`
@@ -33,7 +33,7 @@ const createOffersBlock = (offers) => (
   </section>`
 );
 
-const createTypesList = (id) => uniqTypes.map((type) => (
+const createTypesList = (id) => TYPES.map((type) => (
   `<div class="event__type-item">
     <input
       id="event-type-${type}-${id}"
