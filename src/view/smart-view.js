@@ -3,14 +3,14 @@ import AbstractView from './abstract-view.js';
 export default class SmartView extends AbstractView {
   _data = {};
 
-  updateData = (update, justDataUpdating) => {
+  updateData = (update, justDataUpdating) => { //добавляем параметр justDataUpdating чтобы ориентироваться что нужно просто обновить состояние, но не перерисовывать
     if (!update) {
       return;
     }
 
     this._data = {...this._data, ...update};
 
-    if (justDataUpdating) {
+    if (justDataUpdating) { // добавляем проверку ПОСЛЕ обновления состояния = что ввел пользователь сохранится в состоянии
       return;
     }
 
