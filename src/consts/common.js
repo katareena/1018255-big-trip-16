@@ -27,3 +27,9 @@ export const FilterType = {
   FUTURE: 'future',
   PAST: 'past',
 };
+
+export const MenuItem = {
+  ADD_NEW_POINT: 'new-event-btn',
+  POINTS: 'Table',
+  STATISTICS: 'Stats',
+};

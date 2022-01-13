@@ -26,14 +26,16 @@ export default class PointNewPresenter {
   #pointEditComponent = null;
   #point = null;
   #formType = '';
+  #destroyCallback = null;
 
   constructor(pointListContainer, changeData) {
     this.#pointListContainer = pointListContainer;
     this.#changeData = changeData;
   }
 
-  init = (formType) => {
+  init = (formType, callback) => {
     this.#formType = formType;
+    this.#destroyCallback = callback;
 
     if (this.#pointEditComponent !== null) {
       return;
@@ -52,6 +54,8 @@ export default class PointNewPresenter {
     if (this.#pointEditComponent === null) {
       return;
     }
+
+    this.#destroyCallback?.();
 
     remove(this.#pointEditComponent);
     this.#pointEditComponent = null;
