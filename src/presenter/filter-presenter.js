@@ -10,7 +10,6 @@ export default class FilterPresenter {
   constructor(filterContainer, filterModel) {
     this.#filterContainer = filterContainer;
     this.#filterModel = filterModel;
-
   }
 
   get filters() {
@@ -46,8 +45,6 @@ export default class FilterPresenter {
 
     replace(this.#filterComponent, prevFilterComponent);
     remove(prevFilterComponent);
-
-    // this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
   }
 
   destroy = () => {

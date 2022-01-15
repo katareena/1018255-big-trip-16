@@ -1,21 +1,227 @@
+import Chart from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import dayjs from 'dayjs';
-import flatpickr from 'flatpickr';
+import duration from 'dayjs/plugin/duration';
+dayjs.extend(duration);
+import {Date} from '../consts/dates.js';
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import SmartView from './smart-view.js';
 
-import chartjs from 'chart.js';
-import chartjsDatalabels from 'chartjs-plugin-datalabels';
+import {getMoneyData, getTypesData, getTimesData, typesUp} from '../utils/statistics.js';
 
-import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+const renderMoneyChart = (moneyCtx, points, types) => {
+  const moneyData = getMoneyData(types, points);
 
-const createStatisticsTemplate = () => {
-  const x = hj;
+  return new Chart(moneyCtx, {
+    plugins: [ChartDataLabels],
+    type: 'horizontalBar',
+    data: {
+      labels: typesUp,
+      datasets: [{
+        data: moneyData,
+        backgroundColor: '#ffffff',
+        hoverBackgroundColor: '#ffffff',
+        anchor: 'start',
+        barThickness: 44,
+        minBarLength: 50,
+      }],
+    },
+    options: {
+      responsive: false,
+      plugins: {
+        datalabels: {
+          font: {
+            size: 13,
+          },
+          color: '#000000',
+          anchor: 'end',
+          align: 'start',
+          formatter: (value) => `€ ${value}`,
+        },
+      },
+      title: {
+        display: true,
+        text: 'MONEY',
+        fontColor: '#000000',
+        fontSize: 23,
+        position: 'left',
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            fontColor: '#000000',
+            padding: 5,
+            fontSize: 13,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+        }],
+        xAxes: [{
+          ticks: {
+            display: false,
+            beginAtZero: true,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+        }],
+      },
+      legend: {
+        display: false,
+      },
+      tooltips: {
+        enabled: false,
+      },
+    },
+  });
+};
 
-  return (
-    `<section class="statistics">
+const renderTypesChart = (typeCtx, points, types) => {
+  const typesData = getTypesData(types, points);
+
+  return new Chart(typeCtx, {
+    plugins: [ChartDataLabels],
+    type: 'horizontalBar',
+    data: {
+      labels: typesUp,
+      datasets: [{
+        data: typesData,
+        backgroundColor: '#ffffff',
+        hoverBackgroundColor: '#ffffff',
+        anchor: 'start',
+        barThickness: 44,
+        minBarLength: 50,
+      }],
+    },
+    options: {
+      responsive: false,
+      plugins: {
+        datalabels: {
+          font: {
+            size: 13,
+          },
+          color: '#000000',
+          anchor: 'end',
+          align: 'start',
+          formatter: (value) => `${value}x`,
+        },
+      },
+      title: {
+        display: true,
+        text: 'TYPE',
+        fontColor: '#000000',
+        fontSize: 23,
+        position: 'left',
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            fontColor: '#000000',
+            padding: 5,
+            fontSize: 13,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+        }],
+        xAxes: [{
+          ticks: {
+            display: false,
+            beginAtZero: true,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+        }],
+      },
+      legend: {
+        display: false,
+      },
+      tooltips: {
+        enabled: false,
+      },
+    },
+  });
+};
+
+const renderTimesChart = (typeCtx, points, types) => {
+  const timesData = getTimesData(types, points);
+
+  return new Chart(typeCtx, {
+    plugins: [ChartDataLabels],
+    type: 'horizontalBar',
+    data: {
+      labels: typesUp,
+      datasets: [{
+        data: timesData,
+        backgroundColor: '#ffffff',
+        hoverBackgroundColor: '#ffffff',
+        anchor: 'start',
+        barThickness: 44,
+        minBarLength: 50,
+      }],
+    },
+    options: {
+      responsive: false,
+      plugins: {
+        datalabels: {
+          font: {
+            size: 13,
+          },
+          color: '#000000',
+          anchor: 'end',
+          align: 'start',
+          formatter: (value) => `${dayjs.duration(value).format(Date.duration)}`,
+        },
+      },
+      title: {
+        display: true,
+        text: 'TYPE',
+        fontColor: '#000000',
+        fontSize: 23,
+        position: 'left',
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            fontColor: '#000000',
+            padding: 5,
+            fontSize: 13,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+        }],
+        xAxes: [{
+          ticks: {
+            display: false,
+            beginAtZero: true,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+        }],
+      },
+      legend: {
+        display: false,
+      },
+      tooltips: {
+        enabled: false,
+      },
+    },
+  });
+};
+
+const createStatisticsTemplate = () => (
+  `<section class="statistics">
     <h2 class="visually-hidden">Trip statistics</h2>
-
-    <!-- Пример диаграмм -->
-    <img src="img/big-trip-stats-markup.png" alt="Пример диаграмм">
 
     <div class="statistics__item">
       <canvas class="statistics__chart" id="money" width="900"></canvas>
@@ -29,24 +235,19 @@ const createStatisticsTemplate = () => {
       <canvas class="statistics__chart" id="time" width="900"></canvas>
     </div>
   </section>`
-  );
-};
+);
 
 export default class StatisticsView extends SmartView {
-  #datepicker = null;
+  #moneyChart = null;
+  #typesChart = null;
+  #timesChart = null;
+  #types = null;
 
-  constructor(tasks) {
+  constructor(points, types) {
     super();
-
-    this._data = {
-      tasks,
-      // По условиям техзадания по умолчанию интервал - неделя от текущей даты
-      dateFrom: dayjs().subtract(6, 'day').toDate(),
-      dateTo: dayjs().toDate(),
-    };
-
+    this._data = {points};
+    this.#types = types;
     this.#setCharts();
-    this.#setDatepicker();
   }
 
   get template() {
@@ -56,42 +257,34 @@ export default class StatisticsView extends SmartView {
   removeElement = () => {
     super.removeElement();
 
-    if (this.#datepicker) {
-      this.#datepicker.destroy();
-      this.#datepicker = null;
+    if (this.#moneyChart) {
+      this.#moneyChart.destroy();
+      this.#moneyChart = null;
+    }
+
+    if (this.#typesChart) {
+      this.#typesChart.destroy();
+      this.#typesChart = null;
+    }
+
+    if (this.#timesChart) {
+      this.#timesChart.destroy();
+      this.#timesChart = null;
     }
   }
-
 
   restoreHandlers = () => {
     this.#setCharts();
-    this.#setDatepicker();
-  }
-
-  #dateChangeHandler = ([dateFrom, dateTo]) => {
-    if (!dateFrom || !dateTo) {
-      return;
-    }
-
-    this.updateData({
-      dateFrom,
-      dateTo,
-    });
-  }
-
-  #setDatepicker = () => {
-    this.#datepicker = flatpickr(
-      this.element.querySelector('.statistic__period-input'),
-      {
-        mode: 'range',
-        dateFormat: 'j F',
-        defaultDate: [this._data.dateFrom, this._data.dateTo],
-        onChange: this.#dateChangeHandler,
-      },
-    );
   }
 
   #setCharts = () => {
-    // Нужно отрисовать 3 графика
+    const {points} = this._data;
+    const moneyCtx = this.element.querySelector('#money');
+    const typesCtx = this.element.querySelector('#type');
+    const timesCtx = this.element.querySelector('#time');
+
+    this.#moneyChart = renderMoneyChart(moneyCtx, points, this.#types);
+    this.#typesChart = renderTypesChart(typesCtx, points, this.#types);
+    this.#timesChart = renderTimesChart(timesCtx, points, this.#types);
   }
 }

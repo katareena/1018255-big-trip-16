@@ -41,7 +41,8 @@ export default class TripPresenter {
 
   get points() {
     this.#filterType = this.#filterModel.filter;
-    const points = this.#pointsModel.points;
+    const currentPoints = this.#pointsModel.points;
+    const points = currentPoints.slice();
     const filteredPoints = this.#filterType && filter[this.#filterType](points);
 
     switch (this.#currentSortType) {
@@ -75,8 +76,6 @@ export default class TripPresenter {
   }
 
   createPoint = (callback) => {
-    // this.#currentSortType = SortType.DAY;
-    // this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#pointNewPresenter.init(FormType.NEW, callback);
   }
 

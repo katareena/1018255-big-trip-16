@@ -6,7 +6,7 @@ import {UserAction, UpdateType} from '../consts/common.js';
 import {TYPES} from '../consts/types.js';
 
 const BLANK_OFFER = {
-  'basePrice': '',
+  'basePrice': 0,
   'dateFrom': dayjs().toDate(),
   'dateTo': dayjs().toDate(),
   'id': nanoid(5), // id потом будет приходить с сервера

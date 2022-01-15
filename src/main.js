@@ -1,16 +1,19 @@
 import InfoRouteView from './view/info-route-view.js';
 import SiteMenuView from './view/site-menu-view.js';
 import NewEventBtnView from './view/new-event-btn-view.js';
+import StatisticsView from './view/statistics-view.js';
 
 import TripPresenter from './presenter/trip-presenter.js';
 import FilterPresenter from './presenter/filter-presenter.js';
+import InfoRoutePresenter from './presenter/info-route-presenter.js';
 
 import PointsModel from './model/points-model.js';
 import FilterModel from './model/filter-model.js';
 
 import points from './mock/points.js';
-import {render, RenderPosition} from './utils/render.js';
+import {render, RenderPosition, remove} from './utils/render.js';
 import {MenuItem} from './consts/common.js';
+import {TYPES} from './consts/types.js';
 
 const pointsModel = new PointsModel();
 pointsModel.points = points;
@@ -25,6 +28,7 @@ const headerFiltersBox = siteHeaderElement.querySelector('.trip-controls__filter
 const main = document.querySelector('.page-main');
 const tripContainer = main.querySelector('.page-body__container');
 
+const infoRoutePresenter = new InfoRoutePresenter(headerInfoRouteBox, pointsModel);
 const newPointBtnComponent = new NewEventBtnView();
 const tripPresenter = new TripPresenter(tripContainer, pointsModel, filterModel, newPointBtnComponent);
 const filterPresenter = new FilterPresenter(headerFiltersBox, filterModel, pointsModel);
@@ -33,10 +37,12 @@ const handleTaskNewFormClose = () => {
   newPointBtnComponent.element.disabled = false;
 };
 
+let statisticsComponent = null;
+
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.ADD_NEW_POINT:
-      // Скрыть статистику
+      remove(statisticsComponent);
       filterPresenter.destroy();
       filterPresenter.init();
       tripPresenter.destroy();
@@ -47,12 +53,13 @@ const handleSiteMenuClick = (menuItem) => {
     case MenuItem.POINTS:
       filterPresenter.init();
       tripPresenter.init();
-      // Скрыть статистику
+      remove(statisticsComponent);
       break;
     case MenuItem.STATISTICS:
       filterPresenter.destroy();
       tripPresenter.destroy();
-      // Показать статистику
+      statisticsComponent = new StatisticsView(pointsModel.points, TYPES);
+      render(tripContainer, statisticsComponent, RenderPosition.BEFORE_END);
       break;
   }
 };
@@ -61,7 +68,7 @@ siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
 newPointBtnComponent.setMenuClickHandler(handleSiteMenuClick);
 
 if (points.length !== 0) {
-  render(headerInfoRouteBox, new InfoRouteView(points), RenderPosition.AFTER_BEGIN);
+  infoRoutePresenter.init();
 }
 
 render(headerMenuBox, siteMenuComponent, RenderPosition.BEFORE_END);
@@ -69,5 +76,3 @@ render(headerInfoRouteBox, newPointBtnComponent, RenderPosition.BEFORE_END);
 
 filterPresenter.init();
 tripPresenter.init();
-
-// newPointBtnComponent.setOpenClickHandler(tripPresenter.createPoint);
