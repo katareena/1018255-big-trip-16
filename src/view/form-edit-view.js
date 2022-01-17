@@ -9,7 +9,6 @@ import {formatPointDate} from '../utils/dates.js';
 import {destination as currentDestinations} from '../mock/destination.js';
 import {offers as currentOffers} from '../mock/offer.js';
 
-
 const createCityItems = (cities) => cities.map((city) => (
   `<option class="event__option" value="${city}"></option>`
 )).join('');

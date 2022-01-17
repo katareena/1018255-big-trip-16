@@ -1,4 +1,3 @@
-import InfoRouteView from './view/info-route-view.js';
 import SiteMenuView from './view/site-menu-view.js';
 import NewEventBtnView from './view/new-event-btn-view.js';
 import StatisticsView from './view/statistics-view.js';
@@ -50,7 +49,7 @@ const handleSiteMenuClick = (menuItem) => {
       tripPresenter.createPoint(handleTaskNewFormClose);
       newPointBtnComponent.element.disabled = true;
       break;
-    case MenuItem.POINTS:
+    case MenuItem.POINTS: // когда возвращаемся на страницу с точками из статистики
       filterPresenter.init();
       tripPresenter.init();
       remove(statisticsComponent);

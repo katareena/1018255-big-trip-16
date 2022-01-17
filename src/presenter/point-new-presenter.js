@@ -6,10 +6,10 @@ import {UserAction, UpdateType} from '../consts/common.js';
 import {TYPES} from '../consts/types.js';
 
 const BLANK_OFFER = {
+  //поля id не должно вообще быть чтобы nanoid мог присвоить id при submit
   'basePrice': 0,
   'dateFrom': dayjs().toDate(),
   'dateTo': dayjs().toDate(),
-  'id': nanoid(5), // id потом будет приходить с сервера
   'isFavorite': '',
   'type': TYPES[0],
   'destination': {
@@ -67,7 +67,7 @@ export default class PointNewPresenter {
     this.#changeData(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      {id: nanoid(), ...newPoint},
+      {id: nanoid(5), ...newPoint},
     );
     this.destroy();
   }
