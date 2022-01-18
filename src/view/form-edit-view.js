@@ -15,7 +15,11 @@ const createCityItems = (cities) => cities.map((city) => (
 
 const createOfferItems = (offers) => offers.map((offer) => (
   `<div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="${offer.id}" type="checkbox">
+    <input
+      class="event__offer-checkbox  visually-hidden"
+      id="${offer.id}"
+      type="checkbox"
+      ${offer.isChecked ? 'checked' : ''}>
     <label class="event__offer-label" for="${offer.id}">
       <span class="event__offer-title">${offer.title}</span>
       &plus; &euro;&nbsp;
@@ -267,6 +271,13 @@ export default class FormEditView extends SmartView {
     inputsType.forEach((type) => type.addEventListener('change', this.#typeToggleHandler));
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#cityToggleHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
+
+    const offersInputs = this.element.querySelectorAll('.event__offer-checkbox');
+
+    if (offersInputs.length !== 0) {
+      offersInputs.forEach((input) => input.addEventListener('click', this.#offerClickHandler));
+    }
+
   }
 
   #dateFromChangeHandler = ([userDate]) => {
@@ -335,6 +346,14 @@ export default class FormEditView extends SmartView {
     true); // true это параметр justDataUpdating в updateData
   }
 
+  #offerClickHandler = (evt) => {
+    const offerChecked = evt.target.id;
+
+    this.updateData({
+      offers: this._data.offers.map((offer) => ({...offer, isChecked: (offer.id === offerChecked ? !offer.isChecked : offer.isChecked)})),
+    });
+  }
+
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
 
@@ -342,7 +361,9 @@ export default class FormEditView extends SmartView {
       return;
     }
 
-    this._callback.formSubmit(FormEditView.parsePointToData(this._data));
+    // this._callback.formSubmit(FormEditView.parsePointToData(this._data));
+    this._callback.formSubmit(FormEditView.parseDataToPoint(this._data));
+
     this.#formType = FormType.EDIT;
   }
 
@@ -360,10 +381,13 @@ export default class FormEditView extends SmartView {
     isOffers: point.offers?.length !== 0,
     isDescription: point.destination?.description?.length !== 0,
     isPicture: point.destination?.pictures?.length !== 0,
+
+    // offers: point.offers?.map((offer) => ({...offer, isChecked: false})), //????????????????????
   });
 
   static parseDataToPoint = (data) => {
     const point = {...data};
+
 
     if (!point.isOffers) {
       point.isOffers = [];
