@@ -15,19 +15,17 @@ const createFavorite = (value) => {
 };
 
 const createOfferItems = (offers) => {
+  let template = '';
   for (let i = 0; i < offers.length; i++) {
     if (offers[i].isChecked) {
-      return (
-        `<li class="event__offer">
-          <span class="event__offer-title">${offers[i].title}</span>
-          &plus;&euro;&nbsp;
-          <span class="event__offer-price">${offers[i].price}</span>
-        </li>`
-      );
-    } else {
-      return '';
+      template += (`<li class="event__offer">
+        <span class="event__offer-title">${offers[i].title}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${offers[i].price}</span>
+      </li>`);
     }
   }
+  return template;
 };
 
 const createOffersBlock = (offers) => {
