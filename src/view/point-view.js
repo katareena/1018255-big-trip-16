@@ -14,19 +14,17 @@ const createFavorite = (value) => {
   }
 };
 
-const createOfferItems = (offers) => {
-  let template = '';
-  for (let i = 0; i < offers.length; i++) {
-    if (offers[i].isChecked) {
-      template += (`<li class="event__offer">
-        <span class="event__offer-title">${offers[i].title}</span>
+const createOfferItems = (offers) => offers.map((offer) => {
+  if (offer.isChecked) {
+    return (
+      `<li class="event__offer">
+        <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
-        <span class="event__offer-price">${offers[i].price}</span>
-      </li>`);
-    }
+        <span class="event__offer-price">${offer.price}</span>
+      </li>`
+    );
   }
-  return template;
-};
+}).join('');
 
 const createOffersBlock = (offers) => {
   if (offers.length <= 0) {

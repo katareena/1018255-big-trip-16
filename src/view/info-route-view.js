@@ -5,17 +5,19 @@ import {Date} from '../consts/dates.js';
 const createDestinationsChain = (cities) => `<h1 class="trip-info__title">${cities.join(' - ')}</h1>`;
 
 const getCost = (points) => {
-  let cost = points.map((point) => point.basePrice).reduce((previousPrice, currentPrice) => previousPrice + currentPrice);
+  const baseCost = points.map((point) => point.basePrice).reduce((previousPrice, currentPrice) => previousPrice + currentPrice);
 
-  for(let i = 0; i < points.length; i++) {
-    for(let x = 0; x < points[i].offers.length; x++) {
-      if(points[i].offers[x].isChecked) {
-        cost += points[i].offers[x].price;
+  const offersCost = points.reduce((sum, point) => {
+    point.offers.forEach((offer) => {
+      if (offer.isChecked) {
+        sum += offer.price;
       }
-    }
-  }
+    });
 
-  return cost;
+    return sum;
+  }, 0);
+
+  return baseCost + offersCost;
 };
 
 const createCost = (points) => (

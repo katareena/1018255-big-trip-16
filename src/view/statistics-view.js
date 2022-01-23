@@ -7,7 +7,7 @@ import {Date} from '../consts/dates.js';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import SmartView from './smart-view.js';
 
-import {getMoneyData, getTypesData, getTimesData, typesUp} from '../utils/statistics.js';
+import {getMoneyData, getTypesData, getTimesData, upCaseTypes} from '../utils/statistics.js';
 
 const renderMoneyChart = (moneyCtx, points, types) => {
   const moneyData = getMoneyData(types, points);
@@ -16,7 +16,7 @@ const renderMoneyChart = (moneyCtx, points, types) => {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: typesUp,
+      labels: upCaseTypes,
       datasets: [{
         data: moneyData,
         backgroundColor: '#ffffff',
@@ -86,7 +86,7 @@ const renderTypesChart = (typeCtx, points, types) => {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: typesUp,
+      labels: upCaseTypes,
       datasets: [{
         data: typesData,
         backgroundColor: '#ffffff',
@@ -156,7 +156,7 @@ const renderTimesChart = (typeCtx, points, types) => {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: typesUp,
+      labels: upCaseTypes,
       datasets: [{
         data: timesData,
         backgroundColor: '#ffffff',
