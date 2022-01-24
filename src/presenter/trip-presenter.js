@@ -37,15 +37,13 @@ export default class TripPresenter {
     this.#filterModel = filterModel;
 
     this.#pointNewPresenter = new PointNewPresenter(this.#pointsContainerComponent, this.#handleViewAction);
-
-    this.#pointsModel.addObserver(this.#handleModelEvent);
-    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
     this.#filterType = this.#filterModel.filter;
-    const points = this.#pointsModel.points;
-    const filteredPoints = filter[this.#filterType](points);
+    const currentPoints = this.#pointsModel.points;
+    const points = currentPoints.slice();
+    const filteredPoints = this.#filterType && filter[this.#filterType](points);
 
     switch (this.#currentSortType) {
       case SortType.TIME:
@@ -61,13 +59,24 @@ export default class TripPresenter {
     render(this.#tripContainer, this.#tripComponent, RenderPosition.AFTER_BEGIN);
     render(this.#tripComponent, this.#pointsContainerComponent, RenderPosition.BEFORE_END);
 
+    this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
+
     this.#renderBoard();
   }
 
-  createPoint = () => {
-    this.#currentSortType = SortType.DAY;
-    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this.#pointNewPresenter.init(FormType.NEW);
+  destroy = () => {
+    this.#clearBoard({resetSortType: true});
+
+    remove(this.#pointsContainerComponent);
+    remove(this.#tripComponent);
+
+    this.#pointsModel.removeObserver(this.#handleModelEvent);
+    this.#filterModel.removeObserver(this.#handleModelEvent);
+  }
+
+  createPoint = (callback) => {
+    this.#pointNewPresenter.init(FormType.NEW, callback);
   }
 
   #handleModeChange = () => {

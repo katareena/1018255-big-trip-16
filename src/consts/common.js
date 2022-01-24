@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-export const NUMBER_OF_POINTS = 5;
+export const NUMBER_OF_POINTS = 4;
 export const LENGTH_OF_ID = 5;
 export const MOCK_FOR_CREATE_FORM = 1;
 export const TODAY_DATE = dayjs().toDate();
@@ -26,4 +26,10 @@ export const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
   PAST: 'past',
+};
+
+export const MenuItem = {
+  ADD_NEW_POINT: 'new-event-btn',
+  POINTS: 'Table',
+  STATISTICS: 'Stats',
 };

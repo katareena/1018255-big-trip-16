@@ -6,10 +6,10 @@ import {UserAction, UpdateType} from '../consts/common.js';
 import {TYPES} from '../consts/types.js';
 
 const BLANK_OFFER = {
-  'basePrice': '',
+  //поля id не должно вообще быть чтобы nanoid мог присвоить id при submit
+  'basePrice': 0,
   'dateFrom': dayjs().toDate(),
   'dateTo': dayjs().toDate(),
-  'id': nanoid(5), // id потом будет приходить с сервера
   'isFavorite': '',
   'type': TYPES[0],
   'destination': {
@@ -26,14 +26,16 @@ export default class PointNewPresenter {
   #pointEditComponent = null;
   #point = null;
   #formType = '';
+  #destroyCallback = null;
 
   constructor(pointListContainer, changeData) {
     this.#pointListContainer = pointListContainer;
     this.#changeData = changeData;
   }
 
-  init = (formType) => {
+  init = (formType, callback) => {
     this.#formType = formType;
+    this.#destroyCallback = callback;
 
     if (this.#pointEditComponent !== null) {
       return;
@@ -53,6 +55,8 @@ export default class PointNewPresenter {
       return;
     }
 
+    this.#destroyCallback?.();
+
     remove(this.#pointEditComponent);
     this.#pointEditComponent = null;
 
@@ -63,7 +67,7 @@ export default class PointNewPresenter {
     this.#changeData(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      {id: nanoid(), ...newPoint},
+      {id: nanoid(5), ...newPoint},
     );
     this.destroy();
   }
