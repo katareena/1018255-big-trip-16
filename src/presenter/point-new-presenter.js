@@ -33,7 +33,7 @@ export default class PointNewPresenter {
     this.#changeData = changeData;
   }
 
-  init = (formType, callback) => {
+  init = (formType, callback, offers, destinations) => {
     this.#formType = formType;
     this.#destroyCallback = callback;
 
@@ -41,7 +41,7 @@ export default class PointNewPresenter {
       return;
     }
 
-    this.#pointEditComponent = new FormEditView(BLANK_OFFER, formType);
+    this.#pointEditComponent = new FormEditView(BLANK_OFFER, formType, offers, destinations);
     this.#pointEditComponent.setSubmitFormHandler(this.#handleSubmitForm);
     this.#pointEditComponent.setDeleteClickFormHandler(this.#handleDeleteForm);
 

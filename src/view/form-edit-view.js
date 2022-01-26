@@ -1,17 +1,17 @@
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import SmartView from './smart-view.js';
-import {CITIES} from '../consts/cities.js';
 import {Date} from '../consts/dates.js';
 import {TYPES} from '../consts/types.js';
 import {FormType} from '../consts/form-type.js';
 import {formatPointDate} from '../utils/dates.js';
-import {destination as currentDestinations} from '../mock/destination.js';
-import {offers as currentOffers} from '../mock/offer.js';
 
-const createCityItems = (cities) => cities.map((city) => (
-  `<option class="event__option" value="${city}"></option>`
-)).join('');
+const createCityItems = (currentDestinations) => {
+  const cities = currentDestinations.map((destination) => destination.name);
+  return cities.map((city) => (
+    `<option class="event__option" value="${city}"></option>`
+  )).join('');
+};
 
 const createOfferItems = (offers) => offers.map((offer) => (
   `<div class="event__offer-selector">
@@ -117,7 +117,7 @@ const createDetailsBlock = (offers, description, pictures, isOffers, isDescripti
 
 };
 
-const createFormEditTemplate = (data, formType) => {
+const createFormEditTemplate = (data, formType, currentDestinations) => {
   const {id, type, basePrice, dateFrom, dateTo, destination, offers, isOffers, isDescription, isPicture} = data;
   const dateFromPoint = formatPointDate(dateFrom, Date.full);
   const dateToPoint = formatPointDate(dateTo, Date.full);
@@ -147,7 +147,7 @@ const createFormEditTemplate = (data, formType) => {
             </label>
             <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${destination.name ? destination.name : ''}" list="destination-list-${id}" autocomplete="off" required>
             <datalist id="destination-list-${id}">
-              ${createCityItems(CITIES)}
+              ${createCityItems(currentDestinations)}
             </datalist>
           </div>
 
@@ -188,17 +188,22 @@ export default class FormEditView extends SmartView {
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor(point, formType) {
+  currentOffers = null;
+  currentDestinations = null;
+
+  constructor(point, formType, currentOffers, currentDestinations) {
     super();
     this._data = FormEditView.parsePointToData(point); // записываем поступившие данные как состояние
     this.#formType = formType;
+    this.currentOffers = currentOffers;
+    this.currentDestinations = currentDestinations;
 
     this.#setInnerHandlers();
     this.#setDatepicker();
   }
 
   get template() {
-    return createFormEditTemplate(this._data, this.#formType);
+    return createFormEditTemplate(this._data, this.#formType, this.currentDestinations);
   }
 
   removeElement = () => {
@@ -295,7 +300,7 @@ export default class FormEditView extends SmartView {
   #typeToggleHandler = (evt) => {
     const newType = evt.target.value;
 
-    const newOffers = currentOffers.filter((offer) => offer.type === newType)[0].offers;
+    const newOffers = this.currentOffers.filter((offer) => offer.type === newType)[0].offers;
     this.updateData({
       type: newType,
       offers: newOffers,
@@ -305,10 +310,11 @@ export default class FormEditView extends SmartView {
 
   #cityToggleHandler = (evt) => {
     let newCity = '';
+    const cities = this.currentDestinations.map((destination) => destination.name);
 
-    for (let i = 0; i < CITIES.length; i++) {
-      if (evt.target.value.includes(CITIES[i])) {
-        newCity = CITIES[i];
+    for (let i = 0; i < cities.length; i++) {
+      if (evt.target.value.includes(cities[i])) {
+        newCity = cities[i];
         this.element.querySelector('.event__input--destination').setCustomValidity('');
         break;
       } else {
@@ -320,8 +326,8 @@ export default class FormEditView extends SmartView {
       return;
     }
 
-    const newDescription = currentDestinations.filter((destination) => destination.name === newCity)[0].description;
-    const newPicture = currentDestinations.filter((destination) => destination.name === newCity)[0].pictures;
+    const newDescription = this.currentDestinations.filter((destination) => destination.name === newCity)[0].description;
+    const newPicture = this.currentDestinations.filter((destination) => destination.name === newCity)[0].pictures;
 
     this.updateData({
       destination: {
@@ -347,11 +353,18 @@ export default class FormEditView extends SmartView {
   }
 
   #offerClickHandler = (evt) => {
-    const offerChecked = evt.target.id;
+    const offerChecked = Number(evt.target.id);
+
+    const offers = this._data.offers.map((offer) => ({
+      ...offer,
+      isChecked: (offer.id === offerChecked ? !offer.isChecked : offer.isChecked)
+    }));
+
 
     this.updateData({
-      offers: this._data.offers.map((offer) => ({...offer, isChecked: (offer.id === offerChecked ? !offer.isChecked : offer.isChecked)})),
+      offers
     });
+
   }
 
   #formSubmitHandler = (evt) => {
@@ -381,13 +394,10 @@ export default class FormEditView extends SmartView {
     isOffers: point.offers?.length !== 0,
     isDescription: point.destination?.description?.length !== 0,
     isPicture: point.destination?.pictures?.length !== 0,
-
-    // offers: point.offers?.map((offer) => ({...offer, isChecked: false})), //????????????????????
   });
 
   static parseDataToPoint = (data) => {
     const point = {...data};
-
 
     if (!point.isOffers) {
       point.isOffers = [];

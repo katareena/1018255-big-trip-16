@@ -12,6 +12,12 @@ export default class InfoRoutePresenter {
   }
 
   init = () => {
+    this.#pointsModel.addObserver(this.#handleModelEvent);
+
+    if (this.#pointsModel.points.length === 0) {
+      return;
+    }
+
     if (this.#infoRouteComponent !== null) {
       remove(this.#infoRouteComponent);
     }
@@ -19,7 +25,7 @@ export default class InfoRoutePresenter {
     this.#infoRouteComponent = new InfoRouteView(this.#pointsModel.points);
 
     this.#renderInfoRoute();
-    this.#pointsModel.addObserver(this.#handleModelEvent);
+
   }
 
   destroy = () => {

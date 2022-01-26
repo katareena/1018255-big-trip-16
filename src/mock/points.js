@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import {nanoid} from 'nanoid';
-import toCamelCase from '../utils/to-camel-case.js';
+import {toCamelCase} from '../utils/to-camel-case.js';
 import getRandom from '../utils/get-random.js';
 import {NUMBER_OF_POINTS, LENGTH_OF_ID} from '../consts/common.js';
 import {TYPES} from '../consts/types.js';

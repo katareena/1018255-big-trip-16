@@ -1,7 +1,10 @@
 import dayjs from 'dayjs';
 
-export const NUMBER_OF_POINTS = 4;
-export const LENGTH_OF_ID = 5;
+export const AUTHORIZATION = 'Basic afj465JKD45jk56h';
+export const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';
+
+// export const NUMBER_OF_POINTS = 4;
+// export const LENGTH_OF_ID = 5;
 export const MOCK_FOR_CREATE_FORM = 1;
 export const TODAY_DATE = dayjs().toDate();
 
@@ -20,6 +23,7 @@ export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 export const FilterType = {

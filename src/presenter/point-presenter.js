@@ -22,7 +22,7 @@ export default class PointPresenter {
     this.#changeMode = changeMode;
   }
 
-  init = (point, formType) => {
+  init = (point, formType, offers, destinations) => {
     this.#point = point;
     this.#formType = formType;
 
@@ -30,7 +30,7 @@ export default class PointPresenter {
     const prevPointEditComponent = this.#pointEditComponent;
 
     this.#pointComponent = new PointView(point);
-    this.#pointEditComponent = new FormEditView(point, formType);
+    this.#pointEditComponent = new FormEditView(point, formType, offers, destinations);
 
     this.#pointComponent.setEditClickHandler(this.#handleOpenEditForm);
     this.#pointComponent.setFavoriteHandler(this.#handleFavoriteClick);
@@ -90,11 +90,11 @@ export default class PointPresenter {
   };
 
   #handleSubmitForm = (updatePoint) => {
-    const isPathUpdate = this.#point.type !== updatePoint.type;
+    const isPathUpdate = this.#point.type !== updatePoint.type; // изменение типа маршрута - UpdateType.PATCH
 
     this.#changeData(
       UserAction.UPDATE_POINT,
-      isPathUpdate ? UpdateType.PATCH : UpdateType.MINOR,
+      isPathUpdate ? UpdateType.PATCH : UpdateType.MINOR, // если поменялся не тип путешествия, то UpdateType.MINOR
       updatePoint,
     );
     this.#closeEditForm();
