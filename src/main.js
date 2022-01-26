@@ -8,17 +8,13 @@ import InfoRoutePresenter from './presenter/info-route-presenter.js';
 
 import PointsModel from './model/points-model.js';
 import FilterModel from './model/filter-model.js';
+import OffersModel from './model/offers-model.js';
+import DestinationsModel from './model/destinations-model.js';
 
-import points from './mock/points.js';
 import {render, RenderPosition, remove} from './utils/render.js';
-import {MenuItem} from './consts/common.js';
+import {AUTHORIZATION, END_POINT, MenuItem} from './consts/common.js';
 import {TYPES} from './consts/types.js';
-
-const pointsModel = new PointsModel();
-pointsModel.points = points;
-
-const filterModel = new FilterModel();
-const siteMenuComponent = new SiteMenuView();
+import ApiService from './service/api-service.js';
 
 const siteHeaderElement = document.querySelector('.page-header');
 const headerInfoRouteBox = siteHeaderElement.querySelector('.trip-main');
@@ -27,9 +23,16 @@ const headerFiltersBox = siteHeaderElement.querySelector('.trip-controls__filter
 const main = document.querySelector('.page-main');
 const tripContainer = main.querySelector('.page-body__container');
 
-const infoRoutePresenter = new InfoRoutePresenter(headerInfoRouteBox, pointsModel);
+const pointsModel = new PointsModel(new ApiService(END_POINT, AUTHORIZATION));
+const offersModel = new OffersModel(new ApiService(END_POINT, AUTHORIZATION));
+const destinationsModel = new DestinationsModel(new ApiService(END_POINT, AUTHORIZATION));
+const filterModel = new FilterModel();
+
+const siteMenuComponent = new SiteMenuView();
 const newPointBtnComponent = new NewEventBtnView();
-const tripPresenter = new TripPresenter(tripContainer, pointsModel, filterModel, newPointBtnComponent);
+
+const infoRoutePresenter = new InfoRoutePresenter(headerInfoRouteBox, pointsModel);
+const tripPresenter = new TripPresenter(tripContainer, pointsModel, filterModel, offersModel, destinationsModel, newPointBtnComponent);
 const filterPresenter = new FilterPresenter(headerFiltersBox, filterModel, pointsModel);
 
 const handleTaskNewFormClose = () => {
@@ -63,15 +66,16 @@ const handleSiteMenuClick = (menuItem) => {
   }
 };
 
-siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
-newPointBtnComponent.setMenuClickHandler(handleSiteMenuClick);
-
-if (points.length !== 0) {
-  infoRoutePresenter.init();
-}
-
-render(headerMenuBox, siteMenuComponent, RenderPosition.BEFORE_END);
-render(headerInfoRouteBox, newPointBtnComponent, RenderPosition.BEFORE_END);
-
+infoRoutePresenter.init();
 filterPresenter.init();
 tripPresenter.init();
+
+offersModel.init();
+destinationsModel.init();
+
+pointsModel.init().finally(() => {
+  render(headerMenuBox, siteMenuComponent, RenderPosition.BEFORE_END);
+  render(headerInfoRouteBox, newPointBtnComponent, RenderPosition.BEFORE_END);
+  siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
+  newPointBtnComponent.setMenuClickHandler(handleSiteMenuClick);
+});

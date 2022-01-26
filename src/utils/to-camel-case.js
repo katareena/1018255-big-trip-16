@@ -1,6 +1,6 @@
-import {camelCase} from 'lodash';
+import {camelCase, snakeCase} from 'lodash';
 
-const toCamelCase = (obj) => {
+export const toCamelCase = (obj) => {
   if (Array.isArray(obj)) {
     return obj.map((value) => toCamelCase(value));
   } else if (obj !== null && obj.constructor === Object) {
@@ -15,4 +15,18 @@ const toCamelCase = (obj) => {
   return obj;
 };
 
-export default toCamelCase;
+
+export const toSnakeCase = (obj) => {
+  if (Array.isArray(obj)) {
+    return obj.map((value) => toSnakeCase(value));
+  } else if (obj !== null && obj.constructor === Object) {
+    return Object.keys(obj).reduce(
+      (result, key) => ({
+        ...result,
+        [snakeCase(key)]: toSnakeCase(obj[key]),
+      }),
+      {},
+    );
+  }
+  return obj;
+};

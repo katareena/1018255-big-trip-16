@@ -2,7 +2,15 @@ import dayjs from 'dayjs';
 import AbstractView from './abstract-view.js';
 import {Date} from '../consts/dates.js';
 
-const createDestinationsChain = (cities) => `<h1 class="trip-info__title">${cities.join(' - ')}</h1>`;
+const createDestinationsChain = (cities) => {
+  if (cities.length > 3) {
+    return (
+      `<h1 class="trip-info__title">${cities[0]} ... ${cities[cities.length-1]}</h1>`
+    );
+  } else {
+    return `<h1 class="trip-info__title">${cities.join(' - ')}</h1>`;
+  }
+};
 
 const getCost = (points) => {
   const baseCost = points.map((point) => point.basePrice).reduce((previousPrice, currentPrice) => previousPrice + currentPrice);
@@ -33,6 +41,10 @@ const createInfoRouteTemplate = (points) => {
 
   const dateStart = dayjs(timesFrom[0]).format(Date.day) ?? null;
   const dateEnd = dayjs(timesTo.length - 1).format(Date.day) ?? null;
+
+  if (points.length === 0) {
+    return '';
+  }
 
   return (
     `<section class="trip-main__trip-info  trip-info">

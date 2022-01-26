@@ -20,6 +20,10 @@ export default class SiteMenuView extends AbstractView {
 
   #menuClickHandler = (evt) => {
     evt.preventDefault();
+    if (evt.target.classList.contains('trip-tabs__btn--active')) {
+      return;
+    }
+
     this._callback.menuClick(evt.target.innerHTML);
     const links = this.element.querySelectorAll('.trip-tabs__btn');
 
