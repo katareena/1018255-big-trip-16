@@ -2,7 +2,15 @@ import dayjs from 'dayjs';
 import AbstractView from './abstract-view.js';
 import {Date} from '../consts/dates.js';
 
-const createDestinationsChain = (cities) => `<h1 class="trip-info__title">${cities.join(' - ')}</h1>`;
+const createDestinationsChain = (cities) => {
+  if (cities.length > 3) {
+    return (
+      `<h1 class="trip-info__title">${cities[0]} ... ${cities[cities.length-1]}</h1>`
+    );
+  } else {
+    return `<h1 class="trip-info__title">${cities.join(' - ')}</h1>`;
+  }
+};
 
 const getCost = (points) => {
   const baseCost = points.map((point) => point.basePrice).reduce((previousPrice, currentPrice) => previousPrice + currentPrice);

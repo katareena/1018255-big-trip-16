@@ -131,7 +131,6 @@ export default class PointPresenter {
       isPathUpdate ? UpdateType.PATCH : UpdateType.MINOR, // если поменялся не тип путешествия, то UpdateType.MINOR
       updatePoint,
     );
-    // this.#closeEditForm();
   }
 
   #handleCloseForm = () => {

@@ -215,7 +215,6 @@ export default class FormEditView extends SmartView {
     this.#formType = formType;
     this.currentOffers = currentOffers;
     this.currentDestinations = currentDestinations;
-
     this.#setInnerHandlers();
     this.#setDatepicker();
   }
@@ -319,10 +318,16 @@ export default class FormEditView extends SmartView {
     const newType = evt.target.value;
 
     const newOffers = this.currentOffers.filter((offer) => offer.type === newType)[0].offers;
+
+    const newOffersIsChecked = newOffers.map((offer) => ({
+      ...offer,
+      isChecked: offer.isChecked === undefined ? false : offer.isChecked,
+    }));
+
     this.updateData({
       type: newType,
-      offers: newOffers,
-      isOffers: newOffers.length !== 0,
+      offers: newOffersIsChecked,
+      isOffers: newOffersIsChecked.length !== 0,
     });
   }
 
@@ -370,18 +375,16 @@ export default class FormEditView extends SmartView {
   }
 
   #offerClickHandler = (evt) => {
-    const offerChecked = Number(evt.target.id);
+    const offerCheckedId = Number(evt.target.id);
 
     const offers = this._data.offers.map((offer) => ({
       ...offer,
-      isChecked: (offer.id === offerChecked ? !offer.isChecked : offer.isChecked)
+      isChecked: (offer.id === offerCheckedId ? !offer.isChecked : offer.isChecked)
     }));
 
-
     this.updateData({
-      offers
+      offers,
     });
-
   }
 
   #formSubmitHandler = (evt) => {
@@ -414,14 +417,25 @@ export default class FormEditView extends SmartView {
     this._callback.clickClose();
   }
 
-  static parsePointToData = (point) => ({...point,
-    isOffers: point.offers?.length !== 0,
-    isDescription: point.destination?.description?.length !== 0,
-    isPicture: point.destination?.pictures?.length !== 0,
-    isDisabled: false,
-    isSaving: false,
-    isDeleting: false,
-  });
+  static parsePointToData = (point) => {
+    const offersChecked = point.offers.map((offer) => ({
+      ...offer,
+      isChecked: offer.isChecked === undefined ? false : offer.isChecked,
+    }));
+
+    const data = {...point,
+      isOffers: point.offers?.length !== 0,
+      isDescription: point.destination?.description?.length !== 0,
+      isPicture: point.destination?.pictures?.length !== 0,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    };
+
+    data.offers = offersChecked;
+
+    return data;
+  };
 
   static parseDataToPoint = (data) => {
     const point = {...data};

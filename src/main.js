@@ -79,6 +79,3 @@ pointsModel.init().finally(() => {
   siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
   newPointBtnComponent.setMenuClickHandler(handleSiteMenuClick);
 });
-
-// не загрузились точки -> при клике на Добавить новую точку инфо сообщение на экране должно пропадать
-// если не загрузились offersModel и destinationsModel то ничего не должно отрисовываться а выводится инфо сообщение (как на лоудинг)
