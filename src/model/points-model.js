@@ -35,45 +35,42 @@ export default class PointsModel extends AbstractObservable {
       throw new Error('Can\'t update unexisting point');
     }
 
-    // this.#points.splice(updateIndex, 1, updatePoint);
-
-    // this._notify(updateType, updatePoint);
-
     try {
       const response = await this.#apiService.updatePoint(updatePoint);
       const updatedPoint = this.#adaptToClient(response);
-      // this.#points.splice(updateIndex, 1, updatedPoint);
-
-      this.#points = [
-        ...this.#points.slice(0, updateIndex),
-        updatedPoint,
-        ...this.#points.slice(updateIndex + 1),
-      ];
+      this.#points.splice(updateIndex, 1, updatedPoint);
       this._notify(updateType, updatedPoint);
     } catch(err) {
       throw new Error('Can\'t update point');
     }
   }
 
-  addPoint = (updateType, updatePoint) => {
-    this.#points = [
-      updatePoint,
-      ...this.#points,
-    ];
-
-    this._notify(updateType, updatePoint);
+  addPoint = async (updateType, updatePoint) => {
+    try {
+      const response = await this.#apiService.addPoint(updatePoint);
+      const newPoint = this.#adaptToClient(response);
+      this.#points = [newPoint, ...this.#points];
+      this._notify(updateType, newPoint);
+    } catch(err) {
+      throw new Error('Can\'t add point');
+    }
   }
 
-  deletePoint = (updateType, updatePoint) => {
+  deletePoint = async (updateType, updatePoint) => {
     const updateIndex = this.#points.findIndex((point) => point.id === updatePoint.id);
 
     if (updateIndex === -1) {
-      throw new Error('Can\'t delete unexisting task');
+      throw new Error('Can\'t delete unexisting point');
     }
 
-    this.#points.splice(updateIndex, 1); // удаляет 1 элемент по индексу updateIndex // splice() изменяет содержимое исходного  массива; возвращает удаленный элемент, если происходит удаление и [], если ничего не удалено
-
-    this._notify(updateType);
+    try {
+      // метод удаления задачи на сервере не возвращает response (в отличии от метода редактирования точки маршрута)
+      await this.#apiService.deletePoint(updatePoint);
+      this.#points.splice(updateIndex, 1);
+      this._notify(updateType);
+    } catch(err) {
+      throw new Error('Can\'t delete point');
+    }
   }
 
   #adaptToClient = (point) => toCamelCase(point);

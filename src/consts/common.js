@@ -37,3 +37,11 @@ export const MenuItem = {
   POINTS: 'Table',
   STATISTICS: 'Stats',
 };
+
+export const State = {
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+  ABORTING: 'ABORTING',
+};
+
+export const SHAKE_ANIMATION_TIMEOUT = 600;

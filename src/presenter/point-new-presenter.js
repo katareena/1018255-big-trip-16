@@ -1,16 +1,15 @@
 import dayjs from 'dayjs';
-import {nanoid} from 'nanoid';
 import FormEditView from '../view/form-edit-view.js';
 import {render, RenderPosition, remove} from '../utils/render.js';
 import {UserAction, UpdateType} from '../consts/common.js';
 import {TYPES} from '../consts/types.js';
 
-const BLANK_OFFER = {
-  //поля id не должно вообще быть чтобы nanoid мог присвоить id при submit
+const BLANK_POINT = {
+  //поля id не должно быть, id приходит с сервера
   'basePrice': 0,
   'dateFrom': dayjs().toDate(),
   'dateTo': dayjs().toDate(),
-  'isFavorite': '',
+  'isFavorite': false,
   'type': TYPES[0],
   'destination': {
     'description': '',
@@ -41,7 +40,7 @@ export default class PointNewPresenter {
       return;
     }
 
-    this.#pointEditComponent = new FormEditView(BLANK_OFFER, formType, offers, destinations);
+    this.#pointEditComponent = new FormEditView(BLANK_POINT, formType, offers, destinations);
     this.#pointEditComponent.setSubmitFormHandler(this.#handleSubmitForm);
     this.#pointEditComponent.setDeleteClickFormHandler(this.#handleDeleteForm);
 
@@ -63,13 +62,32 @@ export default class PointNewPresenter {
     document.removeEventListener('keydown', this.#onEscKeyDown);
   }
 
+  setSaving = () => {
+    this.#pointEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#pointEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#pointEditComponent.shake(resetFormState);
+  }
+
   #handleSubmitForm = (newPoint) => {
     this.#changeData(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      {id: nanoid(5), ...newPoint},
+      {...newPoint},
     );
-    this.destroy();
+    // this.destroy();
   }
 
   #handleDeleteForm = () => {

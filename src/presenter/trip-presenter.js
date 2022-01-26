@@ -12,7 +12,7 @@ import {render, remove, RenderPosition} from '../utils/render.js';
 import {SortType} from '../consts/sort-type.js';
 import {sortPointTime, sortPointPrice} from '../utils/sorting-points.js';
 import {FormType} from '../consts/form-type.js';
-import {UserAction, UpdateType, FilterType} from '../consts/common.js';
+import {UserAction, UpdateType, FilterType, State as TaskPresenterViewState} from '../consts/common.js';
 
 export default class TripPresenter {
   #tripContainer = null;
@@ -96,20 +96,35 @@ export default class TripPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   }
 
-  #handleViewAction = (actionType, updateType, updatePoint) => {
+  #handleViewAction = async (actionType, updateType, updatePoint) => {
     // Здесь будем вызывать обновление модели.
     // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
     // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
     // updatePoint - обновленные данные
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this.#pointsModel.updatePoint(updateType, updatePoint);
+        this.#pointPresenters.get(updatePoint.id).setViewState(TaskPresenterViewState.SAVING);
+        try {
+          await this.#pointsModel.updatePoint(updateType, updatePoint);
+        } catch(err) {
+          this.#pointPresenters.get(updatePoint.id).setViewState(TaskPresenterViewState.ABORTING);
+        }
         break;
       case UserAction.ADD_POINT:
-        this.#pointsModel.addPoint(updateType, updatePoint);
+        this.#pointNewPresenter.setSaving();
+        try {
+          await this.#pointsModel.addPoint(updateType, updatePoint);
+        } catch(err) {
+          this.#pointNewPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_POINT:
-        this.#pointsModel.deletePoint(updateType, updatePoint);
+        this.#pointPresenters.get(updatePoint.id).setViewState(TaskPresenterViewState.DELETING);
+        try {
+          await this.#pointsModel.deletePoint(updateType, updatePoint);
+        } catch(err) {
+          this.#pointPresenters.get(updatePoint.id).setViewState(TaskPresenterViewState.ABORTING);
+        }
         break;
     }
   }

@@ -54,10 +54,10 @@ const createTypesList = (id) => TYPES.map((type) => (
   </div>`
 )).join('');
 
-const createRollupBtn = (formType) => {
+const createRollupBtn = (formType, isDisabled) => {
   if (formType === 'form-edit') {
     return (
-      `<button class="event__rollup-btn" type="button">
+      `<button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>
         <span class="visually-hidden">Open event</span>
       </button>`
     );
@@ -66,9 +66,14 @@ const createRollupBtn = (formType) => {
   }
 };
 
-const createNameBtn = (formType) => {
+const createNameBtn = (formType, isDeleting) => {
   if (formType === 'form-edit') {
-    return 'Delete';
+    if (isDeleting) {
+      return 'Deleting...';
+    } else {
+      return 'Delete';
+    }
+
   } else {
     return 'Cancel';
   }
@@ -118,7 +123,20 @@ const createDetailsBlock = (offers, description, pictures, isOffers, isDescripti
 };
 
 const createFormEditTemplate = (data, formType, currentDestinations) => {
-  const {id, type, basePrice, dateFrom, dateTo, destination, offers, isOffers, isDescription, isPicture} = data;
+  const {
+    id,
+    type,
+    basePrice,
+    dateFrom,
+    dateTo,
+    destination,
+    offers, isOffers,
+    isDescription,
+    isPicture,
+    isDisabled,
+    isSaving,
+    isDeleting,
+  } = data;
   const dateFromPoint = formatPointDate(dateFrom, Date.full);
   const dateToPoint = formatPointDate(dateTo, Date.full);
 
@@ -131,7 +149,7 @@ const createFormEditTemplate = (data, formType, currentDestinations) => {
               <span class="visually-hidden">Choose event type</span>
               ${type === '' ? '' : `<img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">` }
             </label>
-            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" type="checkbox">
+            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" type="checkbox" ${isDisabled ? 'disabled' : ''}>
 
             <div class="event__type-list">
               <fieldset class="event__type-group">
@@ -145,7 +163,7 @@ const createFormEditTemplate = (data, formType, currentDestinations) => {
             <label class="event__label  event__type-output" for="event-destination-${id}">
               ${type === '' ? '' : type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${destination.name ? destination.name : ''}" list="destination-list-${id}" autocomplete="off" required>
+            <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${destination.name ? destination.name : ''}" list="destination-list-${id}" autocomplete="off" required ${isDisabled ? 'disabled' : ''}>
             <datalist id="destination-list-${id}">
               ${createCityItems(currentDestinations)}
             </datalist>
@@ -153,10 +171,10 @@ const createFormEditTemplate = (data, formType, currentDestinations) => {
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-${id}">From</label>
-            <input class="event__input  event__input--time  event-time-start" id="event-start-time-${id}" type="text" name="event-start-time" value="${dateFromPoint}">
+            <input class="event__input  event__input--time  event-time-start" id="event-start-time-${id}" type="text" name="event-start-time" value="${dateFromPoint}" ${isDisabled ? 'disabled' : ''}>
             &mdash;
             <label class="visually-hidden" for="event-end-time-${id}">To</label>
-            <input class="event__input  event__input--time event-time-end" id="event-end-time-${id}" type="text" name="event-end-time" value="${dateToPoint}">
+            <input class="event__input  event__input--time event-time-end" id="event-end-time-${id}" type="text" name="event-end-time" value="${dateToPoint}" ${isDisabled ? 'disabled' : ''}>
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -164,13 +182,13 @@ const createFormEditTemplate = (data, formType, currentDestinations) => {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${basePrice}">
+            <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${basePrice}" ${isDisabled ? 'disabled' : ''}>
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">${createNameBtn(formType)}</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+          <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${createNameBtn(formType, isDeleting)}</button>
 
-          ${createRollupBtn(formType)}
+          ${createRollupBtn(formType, isDisabled)}
 
         </header>
 
@@ -275,7 +293,7 @@ export default class FormEditView extends SmartView {
     const inputsType = this.element.querySelectorAll('.event__type-input');
     inputsType.forEach((type) => type.addEventListener('change', this.#typeToggleHandler));
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#cityToggleHandler);
-    this.element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceInputHandler);
 
     const offersInputs = this.element.querySelectorAll('.event__offer-checkbox');
 
@@ -348,8 +366,7 @@ export default class FormEditView extends SmartView {
 
     this.updateData({
       basePrice: Math.ceil(Math.abs(evt.target.value)),
-    },
-    true); // true это параметр justDataUpdating в updateData
+    }); // true это параметр justDataUpdating в updateData: просто обновить состояние, но не перерисовывать
   }
 
   #offerClickHandler = (evt) => {
@@ -374,7 +391,14 @@ export default class FormEditView extends SmartView {
       return;
     }
 
-    // this._callback.formSubmit(FormEditView.parsePointToData(this._data));
+    const inputPrice = this.element.querySelector('.event__input--price');
+    if (this._data.basePrice === 0) {
+      inputPrice.setCustomValidity('Укажите стоимость');
+      return;
+    } else {
+      inputPrice.setCustomValidity('');
+    }
+
     this._callback.formSubmit(FormEditView.parseDataToPoint(this._data));
 
     this.#formType = FormType.EDIT;
@@ -394,6 +418,9 @@ export default class FormEditView extends SmartView {
     isOffers: point.offers?.length !== 0,
     isDescription: point.destination?.description?.length !== 0,
     isPicture: point.destination?.pictures?.length !== 0,
+    isDisabled: false,
+    isSaving: false,
+    isDeleting: false,
   });
 
   static parseDataToPoint = (data) => {
@@ -414,6 +441,9 @@ export default class FormEditView extends SmartView {
     delete point.isOffers;
     delete point.isDescription;
     delete point.isPicture;
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
 
     return point;
   }
