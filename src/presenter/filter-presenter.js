@@ -57,7 +57,7 @@ export default class FilterPresenter {
     this.#pointsModel.removeObserver(this.#handleModelEvent);
     this.#filterModel.removeObserver(this.#handleModelEvent);
 
-    // this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
   }
 
   #handleModelEvent = () => {
