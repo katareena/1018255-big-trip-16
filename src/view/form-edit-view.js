@@ -61,22 +61,21 @@ const createRollupBtn = (formType, isDisabled) => {
         <span class="visually-hidden">Open event</span>
       </button>`
     );
-  } else {
-    return '';
   }
+
+  return '';
 };
 
 const createNameBtn = (formType, isDeleting) => {
   if (formType === 'form-edit') {
     if (isDeleting) {
       return 'Deleting...';
-    } else {
-      return 'Delete';
     }
 
-  } else {
-    return 'Cancel';
+    return 'Delete';
   }
+
+  return 'Cancel';
 };
 
 const createPhotoItems = (photos) => photos?.map((photo) => (
@@ -130,7 +129,8 @@ const createFormEditTemplate = (data, formType, currentDestinations) => {
     dateFrom,
     dateTo,
     destination,
-    offers, isOffers,
+    offers,
+    isOffers,
     isDescription,
     isPicture,
     isDisabled,
@@ -439,18 +439,6 @@ export default class FormEditView extends SmartView {
 
   static parseDataToPoint = (data) => {
     const point = {...data};
-
-    if (!point.isOffers) {
-      point.isOffers = [];
-    }
-
-    if (!point.isDescription) {
-      point.isDescription = [];
-    }
-
-    if (!point.isPicture) {
-      point.isPicture = [];
-    }
 
     delete point.isOffers;
     delete point.isDescription;

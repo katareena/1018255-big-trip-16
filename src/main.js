@@ -45,8 +45,6 @@ const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.ADD_NEW_POINT:
       remove(statisticsComponent);
-      filterPresenter.destroy();
-      filterPresenter.init();
       tripPresenter.destroy();
       tripPresenter.init();
       tripPresenter.createPoint(handleTaskNewFormClose);
@@ -67,7 +65,6 @@ const handleSiteMenuClick = (menuItem) => {
 };
 
 infoRoutePresenter.init();
-filterPresenter.init();
 tripPresenter.init();
 
 offersModel.init();
@@ -78,4 +75,5 @@ pointsModel.init().finally(() => {
   render(headerInfoRouteBox, newPointBtnComponent, RenderPosition.BEFORE_END);
   siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
   newPointBtnComponent.setMenuClickHandler(handleSiteMenuClick);
+  filterPresenter.init();
 });

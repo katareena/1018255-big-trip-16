@@ -1,4 +1,4 @@
-import {toSnakeCase} from '../utils/to-camel-case.js';
+import {toSnakeCase} from '../utils/to-camel-snake-case.js';
 
 const Method = {
   GET: 'GET',

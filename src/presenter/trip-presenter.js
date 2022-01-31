@@ -1,5 +1,5 @@
 import TripView from '../view/trip-view.js';
-import SortingMenuView from '../view/sorting-view.js';
+import SortingMenuView from '../view/sorting-menu-view.js';
 import PointsContainerView from '../view/points-container-view.js';
 import NoPointsView from '../view/no-points-view.js';
 import LoadingView from '../view/loading-view.js';

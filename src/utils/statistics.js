@@ -4,10 +4,10 @@ import {TYPES} from '../consts/types.js';
 // Преобразуем типы согласно параметрам
 export const upCaseTypes = TYPES.map((x) => x.toUpperCase());
 
-const getStatData = (types, filtered) => types.reduce((newArr, type) => {
-  newArr.push(filtered(type));
+const getStatData = (types, filtered) => types.reduce((statData, type) => {
+  statData.push(filtered(type));
 
-  return newArr;
+  return statData;
 }, []);
 
 // Расчитаем финансовые затраты в разрезе точек маршрута

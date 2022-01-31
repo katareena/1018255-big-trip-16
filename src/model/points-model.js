@@ -1,5 +1,5 @@
 import AbstractObservable from '../utils/abstract-observable.js';
-import {toCamelCase} from '../utils/to-camel-case.js';
+import {toCamelCase} from '../utils/to-camel-snake-case.js';
 import {UpdateType} from '../consts/common.js';
 
 export default class PointsModel extends AbstractObservable {
